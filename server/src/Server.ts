@@ -3,6 +3,7 @@ import logger from "./configs/loggerConfig";
 import type { Express } from "express";
 import express from "express";
 import mongoose from "mongoose";
+import router from "router";
 
 export default class Server {
     private app: Express;
@@ -17,6 +18,7 @@ export default class Server {
 
     public bootstrap(): void {
         this.connectDb();
+
     }
 
     private async connectDb(): Promise<void> {
@@ -29,6 +31,11 @@ export default class Server {
             logger.error('[server]: Unable to connect to the database: ' + (error?.message || error));
             process.exit(1);
         }
+    }
+
+    private async setUpRoutes(): Promise<void> {
+        const { apiPrefix } = this.config;
+        this.app.use(apiPrefix, router)
     }
 
     public run(): void {

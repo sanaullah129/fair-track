@@ -10,6 +10,7 @@ const envConfig: IEnvConfig = Object.freeze({
   jwtSecret: process.env.JWT_SECRET || 'your_jwt_secret_key_here',
   jwtExpire: process.env.JWT_EXPIRE || '7d',
   bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS || '10', 10),
+  apiPrefix: '/api',
 });
 
 export default envConfig;

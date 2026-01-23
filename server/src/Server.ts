@@ -1,25 +1,40 @@
+import { IEnvConfig } from "configs/IEnvConfig";
+import logger from "./configs/loggerConfig";
 import type { Express } from "express";
 import express from "express";
+import mongoose from "mongoose";
 
 export default class Server {
     private app: Express;
-    constructor(private config: any) {
+    constructor(private config: IEnvConfig) {
         // Initialize server
         this.app = express();
     }
-    
-     get application(): Express {
+
+    get application(): Express {
         return this.app;
     }
 
     public bootstrap(): void {
-        // Start server logic here
+        this.connectDb();
+    }
+
+    private async connectDb(): Promise<void> {
+        try {
+            const { mongodbUri } = this.config;
+            logger.info('Connecting to MongoDB...');
+            await mongoose.connect(mongodbUri);
+            logger.info('MongoDB connected successfully');
+        } catch (error: any) {
+            logger.error('[server]: Unable to connect to the database: ' + (error?.message || error));
+            process.exit(1);
+        }
     }
 
     public run(): void {
         const { port = 3001 } = this.config;
         this.app.listen(port, () => {
-             console.info(`[server]: Server is running at http://localhost:${port}`);
+            logger.info(`[server]: Server is running at http://localhost:${port}`);
         });
     }
 }

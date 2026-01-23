@@ -36,7 +36,8 @@ class UserController {
     ): Promise<IUserModel> {
         try {
             logger.info({ username: userData.username }, "Creating new user");
-            const user = await this._userRepository.createUser(userData);
+            const hashedPassword = "********"; // Masked for logging
+            const user = await this._userRepository.createUser({ ...userData, password: hashedPassword });
             logger.info(
                 { userId: (user as any)._id },
                 "User created successfully"

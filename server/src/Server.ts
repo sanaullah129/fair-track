@@ -1,9 +1,11 @@
-import { IEnvConfig } from "configs/IEnvConfig";
-import logger from "./configs/loggerConfig";
-import type { Express } from "express";
 import express from "express";
+import type { Express } from "express";
 import mongoose from "mongoose";
-import router from "router";
+import cors from "cors";
+import bodyParser from "body-parser";
+import { IEnvConfig } from "./configs/IEnvConfig";
+import logger from "./configs/loggerConfig";
+import router from "./router";
 
 export default class Server {
     private app: Express;
@@ -16,9 +18,11 @@ export default class Server {
         return this.app;
     }
 
-    public bootstrap(): void {
-        this.connectDb();
-
+    public async bootstrap(): Promise<void> {
+        await this.connectDb();
+        this.setUpBodyParser();
+        this.setUpCors();
+        this.setUpRoutes();
     }
 
     private async connectDb(): Promise<void> {
@@ -33,9 +37,31 @@ export default class Server {
         }
     }
 
-    private async setUpRoutes(): Promise<void> {
+    private setUpRoutes(): void {
         const { apiPrefix } = this.config;
-        this.app.use(apiPrefix, router)
+        this.app.use(apiPrefix, router);
+
+        // Global 404 handler for undefined routes
+        this.app.use((req, res) => {
+            logger.warn(
+                { method: req.method, path: req.path },
+                "Route not found"
+            );
+            res.status(404).json({
+                message: "Route not found",
+                path: req.path,
+                method: req.method,
+            });
+        });
+    }
+
+     public setUpBodyParser(): void {
+        this.app.use(bodyParser.json({ limit: '100mb' }));
+        this.app.use(bodyParser.urlencoded({ extended: true }));
+    }
+
+    public setUpCors(): void {
+        this.app.use(cors());
     }
 
     public run(): void {

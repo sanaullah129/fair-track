@@ -1,6 +1,7 @@
 import UserRepository from "../../repositories/User/User.repository";
 import logger from "../../configs/loggerConfig";
 import type { IUserModel } from "../../models/IModels";
+import { encryptPassword } from "../../helpers/index"
 
 class UserController {
     private _userRepository: UserRepository;
@@ -36,7 +37,7 @@ class UserController {
     ): Promise<IUserModel> {
         try {
             logger.info({ username: userData.username }, "Creating new user");
-            const hashedPassword = "********"; // Masked for logging
+            const hashedPassword: string = await encryptPassword(userData.password!);
             const user = await this._userRepository.createUser({ ...userData, password: hashedPassword });
             logger.info(
                 { userId: (user as any)._id },

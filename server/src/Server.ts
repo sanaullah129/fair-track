@@ -3,8 +3,10 @@ import type { Express } from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import bodyParser from "body-parser";
+import swaggerUi from "swagger-ui-express";
 import { IEnvConfig } from "./configs/IEnvConfig";
 import logger from "./configs/loggerConfig";
+import { getSwaggerOptions } from "./configs/swaggerConfig";
 import router from "./router";
 
 export default class Server {
@@ -22,6 +24,7 @@ export default class Server {
         await this.connectDb();
         this.setUpBodyParser();
         this.setUpCors();
+        this.setUpSwagger();
         this.setUpRoutes();
     }
 
@@ -53,6 +56,17 @@ export default class Server {
                 method: req.method,
             });
         });
+    }
+
+    private setUpSwagger(): void {
+        const swaggerSpec = getSwaggerOptions(this.config);
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+            swaggerOptions: {
+                persistAuthorization: true,
+            },
+            customCss: '.swagger-ui .topbar { display: none }',
+        }));
+        logger.info('Swagger UI available at /api-docs');
     }
 
      public setUpBodyParser(): void {

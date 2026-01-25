@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { IUserModel } from "../../models/IModels";
 import UserModel from "../../models/User.model";
 import envConfig from "../../configs/envConfig";

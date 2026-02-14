@@ -1,7 +1,7 @@
 import { ITransactionModel, TransactionType } from "../../models/IModels";
 
 const validateCreateTransactionData = (data: Partial<ITransactionModel>): boolean => {
-    if (!data.amount || !data.type || !data.userId || !data.categoryId) {
+    if (!data.amount || !data.type || !data.userId || !data.categoryId || !data.profileId) {
         return false;
     }
 
@@ -18,6 +18,10 @@ const validateCreateTransactionData = (data: Partial<ITransactionModel>): boolea
     }
 
     if (typeof data.categoryId !== "string" || data.categoryId.trim().length === 0) {
+        return false;
+    }
+
+    if (typeof data.profileId !== "string" || data.profileId.trim().length === 0) {
         return false;
     }
 

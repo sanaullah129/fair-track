@@ -13,13 +13,14 @@ class TransactionMiddleware {
     ): Promise<void> {
         try {
             logger.info("Create transaction request received");
-            const { amount, type, userId, categoryId, note, date } = req.body as Partial<ITransactionModel>;
+            const { amount, type, userId, categoryId, profileId, note, date } = req.body as Partial<ITransactionModel>;
 
             const transactionData = {
                 amount,
                 type,
                 userId,
                 categoryId,
+                profileId,
                 note,
                 date: date ? new Date(date) : undefined,
             } as Partial<ITransactionModel>;

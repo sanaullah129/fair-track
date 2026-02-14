@@ -2,6 +2,7 @@ import UserRepository from "../../repositories/User/User.repository";
 import logger from "../../configs/loggerConfig";
 import type { IUserModel } from "../../models/IModels";
 import { encryptPassword, comparePasswords, generateToken } from "../../helpers/index";
+import ProfileRepository from "../../repositories/Profiles/Profile.repository";
 
 class UserController {
     private _userRepository: UserRepository;
@@ -43,7 +44,18 @@ class UserController {
                 { userId: (user as any)._id },
                 "User created successfully"
             );
-            return user;
+            // Create default profile named "self" for the new user
+            try {
+                const profileRepo = new ProfileRepository();
+                await profileRepo.createProfile({
+                    name: "self",
+                    userId: (user as any)._id.toString(),
+                });
+            } catch (profileErr) {
+                logger.error({ error: (profileErr as any).message }, "Error creating default profile");
+            }
+
+            return {...user, password: undefined} as IUserModel;
         } catch (error: any) {
             logger.error(
                 { error: error.message },

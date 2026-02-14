@@ -2,12 +2,14 @@ import { Request, Response, Router } from "express";
 import userRoutes from "./routes/UserRoutes";
 import categoryRoutes from "./routes/CategoryRoutes";
 import transactionRoutes from "./routes/TransactionRoutes";
+import profileRoutes from "./routes/ProfileRoutes";
 
 const router = Router();
 
 router.use('/user', userRoutes);
 router.use('/category', categoryRoutes);
 router.use('/transaction', transactionRoutes);
+router.use('/profile', profileRoutes);
 
 /**
  * Health check route

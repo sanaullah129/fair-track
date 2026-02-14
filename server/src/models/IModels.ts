@@ -22,6 +22,7 @@ export interface ITransactionModel extends ICommonFields {
     type: TransactionType;
     userId: string;
     categoryId: string;
+    profileId: string;
 }
 
 export enum TransactionType {
@@ -32,5 +33,10 @@ export enum TransactionType {
 export interface ICategoryModel extends ICommonFields {
     name: string;
     description?: string;
+    userId: string;
+}
+
+export interface IProfileModel extends ICommonFields {
+    name: string;
     userId: string;
 }

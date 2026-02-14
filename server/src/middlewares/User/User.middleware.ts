@@ -77,6 +77,14 @@ class UserMiddleware {
             const result = await this.userController.loginUser(usernameOrEmail, password);
 
             logger.info({ userId: (result.user as any)._id }, "User logged in successfully");
+            // Set the JWT token in an HTTP-only cookie
+            res.cookie("token", result.token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            });
+
             res.status(200).json({
                 message: "Login successful",
                 user: result.user,

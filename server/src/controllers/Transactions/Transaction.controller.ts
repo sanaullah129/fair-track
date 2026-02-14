@@ -1,4 +1,5 @@
 import TransactionRepository from "../../repositories/Transactions/Transaction.repository";
+import ProfileRepository from "../../repositories/Profiles/Profile.repository";
 import logger from "../../configs/loggerConfig";
 import type { ITransactionModel } from "../../models/IModels";
 
@@ -109,6 +110,20 @@ class TransactionController {
     ): Promise<ITransactionModel> {
         try {
             logger.info({ userId: transactionData.userId }, "Creating new transaction");
+
+            // Validate that profile belongs to the user
+            if (!transactionData.profileId || !transactionData.userId) {
+                throw new Error("profileId and userId are required");
+            }
+            const profileRepo = new ProfileRepository();
+            const profile = await profileRepo.findProfileById(transactionData.profileId);
+            if (!profile) {
+                throw new Error("Profile not found");
+            }
+            if (profile.userId.toString() !== transactionData.userId.toString()) {
+                throw new Error("Profile does not belong to the user");
+            }
+
             const transaction = await this._transactionRepository.createTransaction(transactionData);
             logger.info(
                 { transactionId: (transaction as any)._id },

@@ -34,6 +34,11 @@ const TransactionSchema = new mongoose.Schema<ITransactionModel>(
       required: true,
       ref: "User",
     },
+    profileId: {
+      type: String,
+      required: true,
+      ref: "Profile",
+    },
     categoryId: {
       type: String,
       required: true,
@@ -50,6 +55,7 @@ const TransactionSchema = new mongoose.Schema<ITransactionModel>(
 TransactionSchema.index({ userId: 1, date: -1 });
 TransactionSchema.index({ categoryId: 1 });
 TransactionSchema.index({ type: 1 });
+TransactionSchema.index({ profileId: 1 });
 
 const TransactionModel: Model<ITransactionModel> =
   mongoose.model<ITransactionModel>("Transaction", TransactionSchema);

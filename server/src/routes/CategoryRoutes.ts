@@ -1,8 +1,12 @@
 import { Router, Request, Response } from "express";
 import CategoryMiddleware from "../middlewares/Categories/Category.middleware";
+import authMiddleware from "../middlewares/auth.middleware";
 
 const router = Router();
 const categoryMiddleware = new CategoryMiddleware();
+
+// Apply auth middleware to all category routes
+router.use(authMiddleware);
 
 /**
  * @swagger
@@ -12,6 +16,8 @@ const categoryMiddleware = new CategoryMiddleware();
  *       - Category
  *     summary: Create a new category
  *     description: Create a new expense category for a user
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -53,6 +59,12 @@ const categoryMiddleware = new CategoryMiddleware();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       409:
  *         description: Category already exists for this user
  *         content:
@@ -76,6 +88,8 @@ router.post('/', (req: Request, res: Response) => categoryMiddleware.createCateg
  *       - Category
  *     summary: Get category by ID
  *     description: Retrieve a specific category by its ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -98,6 +112,12 @@ router.post('/', (req: Request, res: Response) => categoryMiddleware.createCateg
  *                   $ref: '#/components/schemas/Category'
  *       400:
  *         description: Category ID is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
  *         content:
  *           application/json:
  *             schema:
@@ -125,6 +145,8 @@ router.get('/:id', (req: Request, res: Response) => categoryMiddleware.getCatego
  *       - Category
  *     summary: Get all categories for a user
  *     description: Retrieve all expense categories created by a specific user
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: userId
@@ -153,6 +175,12 @@ router.get('/:id', (req: Request, res: Response) => categoryMiddleware.getCatego
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Internal server error
  *         content:
@@ -170,6 +198,8 @@ router.get('/user/:userId', (req: Request, res: Response) => categoryMiddleware.
  *       - Category
  *     summary: Update a category
  *     description: Update an existing category's name and/or description
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -212,6 +242,12 @@ router.get('/user/:userId', (req: Request, res: Response) => categoryMiddleware.
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Category not found
  *         content:
@@ -235,6 +271,8 @@ router.put('/:id', (req: Request, res: Response) => categoryMiddleware.updateCat
  *       - Category
  *     summary: Delete a category
  *     description: Delete a category by its ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -259,6 +297,12 @@ router.put('/:id', (req: Request, res: Response) => categoryMiddleware.updateCat
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Category not found
  *         content:
@@ -275,3 +319,4 @@ router.put('/:id', (req: Request, res: Response) => categoryMiddleware.updateCat
 router.delete('/:id', (req: Request, res: Response) => categoryMiddleware.deleteCategory(req, res));
 
 export default router;
+

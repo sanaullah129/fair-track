@@ -16,6 +16,15 @@ class UserRepository {
         return user;
     }
 
+    public async findUserByUsernameOrEmailWithPassword(
+        usernameOrEmail: string
+    ): Promise<(IUserModel & { password: string }) | null> {
+        const user = await UserModel.findOne({
+            $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+        }).select('+password');
+        return user;
+    }
+
     public async createUser(
         userData: Partial<IUserModel>
     ): Promise<IUserModel> {

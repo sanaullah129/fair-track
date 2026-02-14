@@ -1,8 +1,12 @@
 import { Router, Request, Response } from "express";
 import TransactionMiddleware from "../middlewares/Transactions/Transaction.middleware";
+import authMiddleware from "../middlewares/auth.middleware";
 
 const router = Router();
 const transactionMiddleware = new TransactionMiddleware();
+
+// Apply auth middleware to all transaction routes
+router.use(authMiddleware);
 
 /**
  * @swagger
@@ -12,6 +16,8 @@ const transactionMiddleware = new TransactionMiddleware();
  *       - Transaction
  *     summary: Create a new transaction
  *     description: Create a new expense or income transaction
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -65,6 +71,12 @@ const transactionMiddleware = new TransactionMiddleware();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Internal server error
  *         content:
@@ -82,6 +94,8 @@ router.post('/', (req: Request, res: Response) => transactionMiddleware.createTr
  *       - Transaction
  *     summary: Get transactions by date range
  *     description: Retrieve all transactions for a user within a specific date range
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: userId
@@ -124,6 +138,12 @@ router.post('/', (req: Request, res: Response) => transactionMiddleware.createTr
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Internal server error
  *         content:
@@ -143,6 +163,8 @@ router.get('/user/date-range', (req: Request, res: Response) =>
  *       - Transaction
  *     summary: Get transactions by user and category
  *     description: Retrieve all transactions for a user filtered by a specific category
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: userId
@@ -177,6 +199,12 @@ router.get('/user/date-range', (req: Request, res: Response) =>
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Internal server error
  *         content:
@@ -196,6 +224,8 @@ router.get('/user/:userId/category/:categoryId', (req: Request, res: Response) =
  *       - Transaction
  *     summary: Get transactions by user and type
  *     description: Retrieve all transactions for a user filtered by type (credit or debit)
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: userId
@@ -231,6 +261,12 @@ router.get('/user/:userId/category/:categoryId', (req: Request, res: Response) =
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Internal server error
  *         content:
@@ -250,6 +286,8 @@ router.get('/user/:userId/type/:type', (req: Request, res: Response) =>
  *       - Transaction
  *     summary: Get all transactions for a user
  *     description: Retrieve all transactions created by a specific user
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: userId
@@ -278,6 +316,12 @@ router.get('/user/:userId/type/:type', (req: Request, res: Response) =>
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       500:
  *         description: Internal server error
  *         content:
@@ -295,6 +339,8 @@ router.get('/user/:userId', (req: Request, res: Response) => transactionMiddlewa
  *       - Transaction
  *     summary: Get transaction by ID
  *     description: Retrieve a specific transaction by its ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -344,6 +390,8 @@ router.get('/:id', (req: Request, res: Response) => transactionMiddleware.getTra
  *       - Transaction
  *     summary: Update a transaction
  *     description: Update an existing transaction's amount, type, note, and/or date
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -393,6 +441,12 @@ router.get('/:id', (req: Request, res: Response) => transactionMiddleware.getTra
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  *       404:
  *         description: Transaction not found
  *         content:
@@ -416,6 +470,8 @@ router.put('/:id', (req: Request, res: Response) => transactionMiddleware.update
  *       - Transaction
  *     summary: Delete a transaction
  *     description: Delete a transaction by its ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -436,6 +492,12 @@ router.put('/:id', (req: Request, res: Response) => transactionMiddleware.update
  *                   example: Transaction deleted successfully
  *       400:
  *         description: Transaction ID is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
  *         content:
  *           application/json:
  *             schema:

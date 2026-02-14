@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { IUserModel, UserType } from "../../models/IModels";
 import UserController from "../../controllers/User/User.controller";
 import logger from "../../configs/loggerConfig";
-import { validateSignUpData } from "./validations";
+import { validateSignUpData, validateLoginData } from "./validations";
 
 class UserMiddleware {
     private userController = new UserController();
@@ -57,6 +57,47 @@ class UserMiddleware {
                 message: "Internal server error",
                 error: error.message,
             });
+        }
+    }
+
+    public async login(
+        req: Request,
+        res: Response,
+    ): Promise<void> {
+        try {
+            logger.info("Login request received");
+            const { usernameOrEmail, password } = req.body;
+
+            if (!validateLoginData(req.body)) {
+                logger.warn({ usernameOrEmail }, "Invalid login data");
+                res.status(400).json({ message: "Invalid login data" });
+                return;
+            }
+
+            const result = await this.userController.loginUser(usernameOrEmail, password);
+
+            logger.info({ userId: (result.user as any)._id }, "User logged in successfully");
+            res.status(200).json({
+                message: "Login successful",
+                user: result.user,
+                token: result.token,
+            });
+        } catch (error: any) {
+            logger.error(
+                { error: error.message },
+                "Error in login middleware"
+            );
+            
+            if (error.message === "Invalid credentials") {
+                res.status(401).json({
+                    message: "Invalid credentials",
+                });
+            } else {
+                res.status(500).json({
+                    message: "Internal server error",
+                    error: error.message,
+                });
+            }
         }
     }
 }

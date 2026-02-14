@@ -21,4 +21,20 @@ const validateSignUpData = (data: Partial<IUserModel>): boolean => {
     return true;
 };
 
-export { validateSignUpData };
+const validateLoginData = (data: any): boolean => {
+    if (!data.usernameOrEmail || !data.password) {
+        return false;
+    }
+
+    if (typeof data.usernameOrEmail !== "string" || data.usernameOrEmail.trim().length === 0) {
+        return false;
+    }
+
+    if (typeof data.password !== "string" || data.password.length < 6) {
+        return false;
+    }
+
+    return true;
+};
+
+export { validateSignUpData, validateLoginData };

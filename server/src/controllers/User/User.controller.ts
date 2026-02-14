@@ -1,7 +1,7 @@
 import UserRepository from "../../repositories/User/User.repository";
 import logger from "../../configs/loggerConfig";
 import type { IUserModel } from "../../models/IModels";
-import { encryptPassword } from "../../helpers/index"
+import { encryptPassword, comparePasswords, generateToken } from "../../helpers/index";
 
 class UserController {
     private _userRepository: UserRepository;
@@ -48,6 +48,53 @@ class UserController {
             logger.error(
                 { error: error.message },
                 "Error creating user"
+            );
+            throw error;
+        }
+    }
+
+    public async loginUser(
+        usernameOrEmail: string,
+        password: string
+    ): Promise<{ user: IUserModel; token: string }> {
+        try {
+            logger.info({ usernameOrEmail }, "User login attempt");
+            const user = await this._userRepository.findUserByUsernameOrEmailWithPassword(usernameOrEmail);
+            
+            if (!user) {
+                logger.warn({ usernameOrEmail }, "User not found during login");
+                throw new Error("Invalid credentials");
+            }
+
+            const isPasswordValid = await comparePasswords(password, user.password);
+            
+            if (!isPasswordValid) {
+                logger.warn({ usernameOrEmail }, "Invalid password during login");
+                throw new Error("Invalid credentials");
+            }
+
+            const token = generateToken({
+                userId: (user as any)._id.toString(),
+                username: user.username,
+                email: user.email,
+            });
+
+            logger.info(
+                { userId: (user as any)._id },
+                "User logged in successfully"
+            );
+
+            const userWithoutPassword = user;
+            delete userWithoutPassword.password;
+
+            return {
+                user: userWithoutPassword,
+                token,
+            };
+        } catch (error: any) {
+            logger.error(
+                { error: error.message },
+                "Error during login"
             );
             throw error;
         }

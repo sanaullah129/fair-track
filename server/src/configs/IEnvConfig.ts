@@ -3,7 +3,7 @@ export interface IEnvConfig {
     port: number;
     mongodbUri: string;
     jwtSecret: string;
-    jwtExpire: string;
+    jwtExpire: unknown;
     bcryptRounds: number;
     apiPrefix: string;
 }

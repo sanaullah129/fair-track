@@ -72,7 +72,7 @@ const userMiddleware = new UserMiddleware();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/sign-up', (req: Request, res: Response) => userMiddleware.signUp(req, res));
+router.post('/sign-up', userMiddleware.signUp);
 
 /**
  * @swagger
@@ -134,6 +134,6 @@ router.post('/sign-up', (req: Request, res: Response) => userMiddleware.signUp(r
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/login', (req: Request, res: Response) => userMiddleware.login(req, res));
+router.post('/login', userMiddleware.login);
 
 export default router;

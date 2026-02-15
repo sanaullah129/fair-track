@@ -4,8 +4,9 @@ import UserController from "../../controllers/User/User.controller";
 import logger from "../../configs/loggerConfig";
 import { validateSignUpData, validateLoginData } from "./validations";
 
+const userController = new UserController();
+
 class UserMiddleware {
-    private userController = new UserController();
 
     public async signUp(
         req: Request,
@@ -22,7 +23,7 @@ class UserMiddleware {
                 return;
             }
 
-            const isUserExists = await this.userController.getUser(
+            const isUserExists = await userController.getUser(
                 username!,
                 email!
             );
@@ -36,7 +37,7 @@ class UserMiddleware {
             }
 
             // Create new user
-            const newUser = await this.userController.signUpUser({
+            const newUser = await userController.signUpUser({
                 username,
                 email,
                 password,
@@ -74,7 +75,7 @@ class UserMiddleware {
                 return;
             }
 
-            const result = await this.userController.loginUser(usernameOrEmail, password);
+            const result = await userController.loginUser(usernameOrEmail, password);
 
             logger.info({ userId: (result.user as any)._id }, "User logged in successfully");
             // Set the JWT token in an HTTP-only cookie

@@ -39,10 +39,6 @@ const UsersSchema = new mongoose.Schema<IUserModel>(
   }
 );
 
-// Indexes for better query performance
-UsersSchema.index({ username: 1 });
-UsersSchema.index({ email: 1 });
-
 const UserModel: Model<IUserModel> = mongoose.model<IUserModel>(
   "Users",
   UsersSchema

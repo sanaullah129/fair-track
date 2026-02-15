@@ -24,7 +24,7 @@ export default class Server {
         await this.connectDb();
         this.setUpBodyParser();
         this.setUpCors();
-        this.setUpSwagger();
+        // this.setUpSwagger();
         this.setUpRoutes();
     }
 

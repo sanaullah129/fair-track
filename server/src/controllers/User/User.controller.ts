@@ -38,8 +38,7 @@ class UserController {
     ): Promise<IUserModel> {
         try {
             logger.info({ username: userData.username }, "Creating new user");
-            const hashedPassword: string = await encryptPassword(userData.password!);
-            const user = await this._userRepository.createUser({ ...userData, password: hashedPassword });
+            const user = await this._userRepository.createUser(userData);
             logger.info(
                 { userId: (user as any)._id },
                 "User created successfully"
@@ -79,7 +78,7 @@ class UserController {
             }
 
             const isPasswordValid = await comparePasswords(password, user.password);
-            
+
             if (!isPasswordValid) {
                 logger.warn({ usernameOrEmail }, "Invalid password during login");
                 throw new Error("Invalid credentials");

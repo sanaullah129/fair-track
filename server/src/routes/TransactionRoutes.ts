@@ -1,12 +1,14 @@
 import { Router, Request, Response } from "express";
 import TransactionMiddleware from "../middlewares/Transactions/Transaction.middleware";
 import authMiddleware from "../middlewares/auth.middleware";
+import auditMiddleware from "../middlewares/audit.middleware";
 
 const router = Router();
 const transactionMiddleware = new TransactionMiddleware();
 
-// Apply auth middleware to all transaction routes
+// Apply auth and audit middleware to all transaction routes
 router.use(authMiddleware);
+router.use(auditMiddleware);
 
 /**
  * @swagger

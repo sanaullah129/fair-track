@@ -3,6 +3,7 @@ import { IUserModel, UserType } from "../../models/IModels";
 import UserController from "../../controllers/User/User.controller";
 import logger from "../../configs/loggerConfig";
 import { validateSignUpData, validateLoginData } from "./validations";
+import { generateToken } from "../../helpers/jwt";
 
 const userController = new UserController();
 

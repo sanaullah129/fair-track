@@ -48,6 +48,7 @@ class UserController {
                 const profileRepo = new ProfileRepository();
                 await profileRepo.createProfile({
                     name: "self",
+                    updatedBy: (user as any)._id.toString(),
                     userId: (user as any)._id.toString(),
                 });
             } catch (profileErr) {

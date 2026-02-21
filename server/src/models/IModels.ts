@@ -13,6 +13,10 @@ export enum UserType {
 interface ICommonFields {
     createdAt: Date;
     updatedAt: Date;
+    // Base fields for audit and replication
+    originalId?: string;
+    createdBy?: string;
+    updatedBy?: string;
 }
 
 export interface ITransactionModel extends ICommonFields {

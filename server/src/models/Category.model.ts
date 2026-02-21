@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 import { ICategoryModel } from "./IModels";
+import baseFields from "./Base.model";
 import type { Model } from "mongoose";
 
 const CategorySchema = new mongoose.Schema<ICategoryModel>(
   {
+    ...baseFields,
     name: {
       type: String,
       required: true,

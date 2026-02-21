@@ -1,21 +1,29 @@
-import { createBrowserRouter } from "react-router";
-import Login from "./modules/auth/Login";
-import SignUp from "./modules/auth/SignUp";
-import App from "./App";
+import { Suspense } from "react";
+import { BrowserRouter, Routes, Route } from "react-router";
+import { protectedRoutes, publicRoutes } from "./config/routeConfig";
+import AuthContext from "./components/wrappers/AuthContext";
 
-const routes = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-  },
-  {
-    path: "login",
-    element: <Login />,
-  },
-  {
-    path: "signup",
-    element: <SignUp />,
-  },
-]);
+export default function AppRoutes() {
+  return (
+    <BrowserRouter>
+      <Suspense fallback={<div>Loading...</div>}>
+        {/* Public routes - no AuthContext */}
+        <Routes>
+          {publicRoutes.map((r) => {
+            const Component = r.component;
+            return <Route key={r.path} path={r.path} element={<Component />} />;
+          })}
 
-export default routes;
+          <AuthContext>
+            {protectedRoutes.map((r) => {
+              const Component = r.component;
+              return (
+                <Route key={r.path} path={r.path} element={<Component />} />
+              );
+            })}
+          </AuthContext>
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  );
+}

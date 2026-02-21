@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 import { ITransactionModel, TransactionType } from "./IModels";
+import baseFields from "./Base.model";
 import type { Model } from "mongoose";
 
 const TransactionSchema = new mongoose.Schema<ITransactionModel>(
   {
+    ...baseFields,
     amount: {
       type: Number,
       required: true,

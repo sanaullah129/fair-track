@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 import type { Model } from "mongoose";
 import { IProfileModel } from "./IModels";
+import baseFields from "./Base.model";
 
 const ProfileSchema = new mongoose.Schema<IProfileModel>(
   {
+    ...baseFields,
     name: {
       type: String,
       required: true,

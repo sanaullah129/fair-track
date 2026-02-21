@@ -13,11 +13,13 @@ import {
   Tooltip,
 } from '@mui/material';
 import { pageNames } from '../utils/constants';
+import { useNavigate } from 'react-router';
 
 const settings = ['Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const navigate = useNavigate();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -53,6 +55,7 @@ function ResponsiveAppBar() {
               <Button
                 key={page}
                 sx={{ my: 2, color: 'white', display: 'block' }}
+                onClick={() => navigate(`/${page.toLowerCase()}`)}
               >
                 {page}
               </Button>

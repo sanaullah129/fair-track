@@ -23,4 +23,13 @@ export const theme = createTheme({
   typography: {
     fontFamily: "Inter, Roboto, sans-serif",
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+        }
+      }
+    }
+  }
 });

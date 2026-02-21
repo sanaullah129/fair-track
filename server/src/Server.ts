@@ -2,6 +2,7 @@ import express from "express";
 import type { Express } from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import swaggerUi from "swagger-ui-express";
 import { IEnvConfig } from "./configs/IEnvConfig";
@@ -23,6 +24,7 @@ export default class Server {
     public async bootstrap(): Promise<void> {
         await this.connectDb();
         this.setUpBodyParser();
+        this.setUpCookieParser();
         this.setUpCors();
         // this.setUpSwagger();
         this.setUpRoutes();
@@ -75,9 +77,18 @@ export default class Server {
     }
 
     public setUpCors(): void {
-        this.app.use(cors());
+        // Allow credentials (cookies) and reflect origin
+        this.app.use(
+            cors({
+                origin: true,
+                credentials: true,
+            })
+        );
     }
 
+    public setUpCookieParser(): void {
+        this.app.use(cookieParser());
+    }
     public run(): void {
         const { port = 3001 } = this.config;
         this.app.listen(port, () => {

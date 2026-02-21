@@ -1,12 +1,14 @@
 import { Router, Request, Response } from "express";
 import CategoryMiddleware from "../middlewares/Categories/Category.middleware";
 import authMiddleware from "../middlewares/auth.middleware";
+import auditMiddleware from "../middlewares/audit.middleware";
 
 const router = Router();
 const categoryMiddleware = new CategoryMiddleware();
 
-// Apply auth middleware to all category routes
+// Apply auth and audit middleware to all category routes
 router.use(authMiddleware);
+router.use(auditMiddleware);
 
 /**
  * @swagger

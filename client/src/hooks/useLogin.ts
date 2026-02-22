@@ -12,7 +12,7 @@ export const useLogin = () => {
     onSuccess: (data: AuthResponse) => {
       // Store user and token in auth store
       setUser({
-        id: data.user.id,
+        id: data.user._id,
         username: data.user.username,
         email: data.user.email,
       });

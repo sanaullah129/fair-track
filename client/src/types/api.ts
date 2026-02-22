@@ -11,7 +11,7 @@ export interface LoginRequest {
 
 export interface AuthResponse {
   user: {
-    id: string;
+    _id: string;
     username: string;
     email: string;
   };
@@ -39,9 +39,11 @@ export interface ApiResponse<T = any> {
 }
 
 export interface ProfileModel {
-  id: string;
+  _id: string;
   name: string;
   userId: string;
+  createdBy: string;
+  updatedBy: string;
   createdAt: string;
   updatedAt: string;
 }

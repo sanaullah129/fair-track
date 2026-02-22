@@ -39,8 +39,9 @@ class ProfileMiddleware {
         try {
             logger.info("Get profiles by user request received");
             const { userId } = req.params;
+            console.log("User ID from request params:", userId);
 
-            if (!userId || Array.isArray(userId)) {
+            if (!userId || userId === "undefined") {
                 logger.warn("User ID not provided");
                 res.status(400).json({ message: "User ID is required" });
                 return;

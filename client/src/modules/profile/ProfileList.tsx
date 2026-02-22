@@ -15,7 +15,7 @@ const ProfileList = () => {
       <List>
         {data && data.length > 0 ? (
           data.map((p) => (
-            <ListItem key={p.id} divider>
+            <ListItem key={p._id} divider>
               <ListItemText primary={p.name} secondary={`Created: ${new Date(p.createdAt).toLocaleString()}`} />
             </ListItem>
           ))

@@ -5,6 +5,7 @@ type LazyComponent = React.LazyExoticComponent<React.ComponentType<any>>;
 interface RouteConfig {
   path: string;
   component: LazyComponent;
+  children?: RouteConfig[];
 }
 
 const App = React.lazy(() => import("../App"));
@@ -12,18 +13,17 @@ const Login = React.lazy(() => import("../modules/auth/Login"));
 const SignUp = React.lazy(() => import("../modules/auth/SignUp"));
 const ProfileList = React.lazy(() => import("../modules/profile/ProfileList"));
 
-const protectedRoutes: RouteConfig[] = [
+const routes: RouteConfig[] = [
   {
     path: "/",
     component: App,
+    children: [
+      {
+        path: "profiles",
+        component: ProfileList,
+      },
+    ],
   },
-  {
-    path: "profiles",
-    component: ProfileList,
-  },
-];
-
-const publicRoutes: RouteConfig[] = [
   {
     path: "login",
     component: Login,
@@ -34,4 +34,4 @@ const publicRoutes: RouteConfig[] = [
   },
 ];
 
-export { protectedRoutes, publicRoutes };
+export default routes;

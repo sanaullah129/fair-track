@@ -47,15 +47,16 @@ class UserController {
             try {
                 const profileRepo = new ProfileRepository();
                 await profileRepo.createProfile({
-                    name: "self",
+                    name: "Self",
                     updatedBy: (user as any)._id.toString(),
                     userId: (user as any)._id.toString(),
+                    createdBy: (user as any)._id.toString(),
                 });
             } catch (profileErr) {
                 logger.error({ error: (profileErr as any).message }, "Error creating default profile");
             }
 
-            return {...user, password: undefined} as IUserModel;
+            return { ...user, password: undefined } as IUserModel;
         } catch (error: any) {
             logger.error(
                 { error: error.message },
@@ -72,7 +73,7 @@ class UserController {
         try {
             logger.info({ usernameOrEmail }, "User login attempt");
             const user = await this._userRepository.findUserByUsernameOrEmailWithPassword(usernameOrEmail);
-            
+
             if (!user) {
                 logger.warn({ usernameOrEmail }, "User not found during login");
                 throw new Error("Invalid credentials");

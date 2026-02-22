@@ -5,10 +5,12 @@ import useAuthStore from "../stores/useAuthStore";
 
 export const useProfilesByUser = () => {
   const { user } = useAuthStore();
+  console.log("Fetching profiles for user:", user);
 
   return useQuery<ProfileModel[]>({
     queryKey: ["profiles", user?.id],
     queryFn: () => profileApi.getByUser(user!.id),
     enabled: !!user?.id,
+    gcTime: 0,
   });
 };

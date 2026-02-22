@@ -7,7 +7,8 @@ export const profileApi = {
   },
 
   getByUser: async (userId: string) => {
-    return apiClient.get<ProfileModel[]>(`/profile/user/${userId}`);
+    const response = await apiClient.get<{ message: string; profiles: ProfileModel[] }>(`/profile/user/${userId}`);
+    return response.profiles;
   },
 
   getById: async (id: string) => {

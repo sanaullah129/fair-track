@@ -6,7 +6,10 @@ const AuthContext: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { token } = useAuthStore();
   const navigate = useNavigate();
   useEffect(() => {
-    if (!token) {
+    if (
+      !token &&
+      window.location.pathname !== "/signup"
+    ) {
       navigate("/login");
     }
   }, [token, navigate]);

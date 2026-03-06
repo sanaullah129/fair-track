@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 import type { Model } from "mongoose";
 import { IProfileModel } from "./IModels";
@@ -26,6 +27,7 @@ const ProfileSchema = new mongoose.Schema<IProfileModel>(
 
 // Indexes
 ProfileSchema.index({ userId: 1 });
+ProfileSchema.index({ userId: 1, name: 1 }, { unique: true });
 
 const ProfileModel: Model<IProfileModel> = mongoose.model<IProfileModel>(
   "Profile",

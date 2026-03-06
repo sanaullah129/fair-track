@@ -19,6 +19,21 @@ class ProfileRepository {
         const profile = await ProfileModel.findById(id);
         return profile;
     }
+
+    public async findProfileByUserAndName(userId: string, name: string): Promise<IProfileModel | null> {
+        const profile = await ProfileModel.findOne({ userId, name });
+        return profile;
+    }
+
+    public async updateProfile(id: string, updates: Partial<IProfileModel>): Promise<IProfileModel | null> {
+        const profile = await ProfileModel.findByIdAndUpdate(id, updates, { new: true });
+        return profile;
+    }
+
+    public async deleteProfile(id: string): Promise<IProfileModel | null> {
+        const profile = await ProfileModel.findByIdAndDelete(id);
+        return profile;
+    }
 }
 
 export default ProfileRepository;

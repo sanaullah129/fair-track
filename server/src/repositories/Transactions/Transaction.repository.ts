@@ -75,6 +75,18 @@ class TransactionRepository {
         const result = await TransactionModel.findByIdAndDelete(id);
         return !!result;
     }
+
+    public async updateTransactionProfile(
+        oldProfileId: string,
+        newProfileId: string,
+        userId: string
+    ): Promise<{ modifiedCount: number }> {
+        const result = await TransactionModel.updateMany(
+            { profileId: oldProfileId, userId },
+            { profileId: newProfileId }
+        );
+        return { modifiedCount: result.modifiedCount };
+    }
 }
 
 export default TransactionRepository;

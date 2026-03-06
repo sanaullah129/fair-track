@@ -12,9 +12,10 @@ const App = React.lazy(() => import("../App"));
 const Login = React.lazy(() => import("../modules/auth/Login"));
 const SignUp = React.lazy(() => import("../modules/auth/SignUp"));
 const Logout = React.lazy(() => import("../modules/auth/Logout"));
-const ProfileList = React.lazy(() => import("../modules/profile/ProfileList"));
+const Profiles = React.lazy(() => import("../modules/profile/Profiles"));
 const Transactions = React.lazy(() => import("../modules/transactions/Transactions"));
 const Categories = React.lazy(() => import("../modules/categories/Categories"));
+const Dashboard = React.lazy(() => import("../modules/dashboard/Dashboard"));
 
 const routes: RouteConfig[] = [
   {
@@ -23,7 +24,7 @@ const routes: RouteConfig[] = [
     children: [
       {
         path: "profiles",
-        component: ProfileList,
+        component: Profiles,
       },
       {
         path: "transactions",
@@ -32,6 +33,10 @@ const routes: RouteConfig[] = [
       {
         path: "categories",
         component: Categories,
+      },
+      {
+        path: "dashboard",
+        component: Dashboard,
       }
     ],
   },

@@ -1,23 +1,36 @@
-import { Box, Typography, List, ListItem, ListItemText, CircularProgress, Alert } from "@mui/material";
-import { useProfilesByUser } from "../../hooks/useProfiles";
+import { Box, List, ListItem, ListItemText, CircularProgress, Alert } from "@mui/material";
+import type { ProfileModel } from "../../types/api";
+import ProfileItem from "./ProfileItem";
 
-const ProfileList = () => {
-  const { data, isLoading, error } = useProfilesByUser();
+interface ProfileListProps {
+  profiles?: ProfileModel[];
+  isLoading?: boolean;
+  error?: Error | null;
+  onEdit: (profile: ProfileModel) => void;
+  onDelete: (id: string) => void;
+}
 
+const ProfileList = ({
+  profiles,
+  isLoading = false,
+  error,
+  onEdit,
+  onDelete,
+}: ProfileListProps) => {
   if (isLoading) return <CircularProgress />;
   if (error) return <Alert severity="error">{(error as any)?.message || "Failed to load profiles"}</Alert>;
 
   return (
-    <Box sx={{ maxWidth: 720, mx: "auto", mt: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Profiles
-      </Typography>
+    <Box>
       <List>
-        {data && data.length > 0 ? (
-          data.map((p) => (
-            <ListItem key={p._id} divider>
-              <ListItemText primary={p.name} secondary={`Created: ${new Date(p.createdAt).toLocaleString()}`} />
-            </ListItem>
+        {profiles && profiles.length > 0 ? (
+          profiles.map((profile) => (
+            <ProfileItem
+              key={profile._id}
+              profile={profile}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
           ))
         ) : (
           <ListItem>

@@ -14,6 +14,7 @@ class CategoryMiddleware {
         try {
             logger.info("Create category request received");
             const { name, description, userId } = req.body as Partial<ICategoryModel>;
+            const userId_from_token = req.user?.userId;
 
             if (!validateCreateCategoryData(req.body)) {
                 logger.warn({ name, userId }, "Invalid category data");
@@ -38,6 +39,8 @@ class CategoryMiddleware {
                 name: name?.trim(),
                 description: description?.trim(),
                 userId,
+                createdBy: userId_from_token!,
+                updatedBy: userId_from_token!,
             });
 
             logger.info({ categoryId: (newCategory as any)._id }, "Category created successfully");
@@ -159,6 +162,7 @@ class CategoryMiddleware {
             const updatedData: Partial<ICategoryModel> = {};
             if (name) updatedData.name = name.trim();
             if (description) updatedData.description = description.trim();
+            updatedData.updatedBy = req.user?.userId!;
 
             const updatedCategory = await this.categoryController.updateCategory(id as string, updatedData);
 

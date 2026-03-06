@@ -1,5 +1,10 @@
 export const pageNames = [
-    "Transactions",
-    "Dashboard",
-    "Profiles"
+    { name: "Transactions", path: "/transactions" },
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Profiles", path: "/profiles" }
+]
+
+export const settings = [
+    { name: "Manage Categories", path: "/categories" },
+    { name: "Logout", path: "/logout" }
 ]

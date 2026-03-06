@@ -12,6 +12,7 @@ class ProfileMiddleware {
         try {
             logger.info("Create profile request received");
             const { name, userId } = req.body;
+            const userId_from_token = req.user?.userId;
 
             if (!name || !userId) {
                 logger.warn({ name, userId }, "Invalid profile data");
@@ -19,7 +20,12 @@ class ProfileMiddleware {
                 return;
             }
 
-            const newProfile = await this.profileController.createProfile({ name, userId });
+            const newProfile = await this.profileController.createProfile({
+                name,
+                userId,
+                createdBy: userId_from_token!,
+                updatedBy: userId_from_token!,
+            });
 
             logger.info({ profileId: (newProfile as any)._id }, "Profile created successfully");
             res.status(201).json({

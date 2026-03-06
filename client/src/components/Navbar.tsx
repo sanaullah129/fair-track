@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   AppBar,
   Box,
@@ -11,14 +11,14 @@ import {
   Avatar,
   Button,
   Tooltip,
-} from '@mui/material';
-import { pageNames } from '../utils/constants';
-import { useNavigate } from 'react-router';
-
-const settings = ['Account', 'Dashboard', 'Logout'];
+} from "@mui/material";
+import { pageNames, settings } from "../utils/constants";
+import { useNavigate } from "react-router";
 
 function ResponsiveAppBar() {
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null,
+  );
   const navigate = useNavigate();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -27,6 +27,10 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleMenuItemClick = (redirectTo: string) => {
+    navigate(`/${redirectTo}`);
   };
 
   return (
@@ -40,24 +44,29 @@ function ResponsiveAppBar() {
             href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
+              display: { xs: "none", md: "flex" },
+              fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
+              letterSpacing: ".3rem",
+              color: "inherit",
+              textDecoration: "none",
             }}
           >
-            <img src="/fair-track.png" alt="FairTrack" width="100" height="40" />
+            <img
+              src="/fair-track.png"
+              alt="FairTrack"
+              width="100"
+              height="40"
+            />
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pageNames.map((page) => (
               <Button
-                key={page}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                onClick={() => navigate(`/${page.toLowerCase()}`)}
+                key={page.name}
+                sx={{ my: 2, color: "white", display: "block" }}
+                onClick={() => navigate(page.path)}
               >
-                {page}
+                {page.name}
               </Button>
             ))}
           </Box>
@@ -68,24 +77,29 @@ function ResponsiveAppBar() {
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: "45px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               keepMounted
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                <MenuItem
+                  key={setting.name}
+                  onClick={() => handleMenuItemClick(setting.path)}
+                >
+                  <Typography sx={{ textAlign: "center" }}>
+                    {setting.name}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>

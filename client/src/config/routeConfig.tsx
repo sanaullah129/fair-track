@@ -11,7 +11,10 @@ interface RouteConfig {
 const App = React.lazy(() => import("../App"));
 const Login = React.lazy(() => import("../modules/auth/Login"));
 const SignUp = React.lazy(() => import("../modules/auth/SignUp"));
+const Logout = React.lazy(() => import("../modules/auth/Logout"));
 const ProfileList = React.lazy(() => import("../modules/profile/ProfileList"));
+const Transactions = React.lazy(() => import("../modules/transactions/Transactions"));
+const Categories = React.lazy(() => import("../modules/categories/Categories"));
 
 const routes: RouteConfig[] = [
   {
@@ -22,6 +25,14 @@ const routes: RouteConfig[] = [
         path: "profiles",
         component: ProfileList,
       },
+      {
+        path: "transactions",
+        component: Transactions,
+      },
+      {
+        path: "categories",
+        component: Categories,
+      }
     ],
   },
   {
@@ -31,6 +42,10 @@ const routes: RouteConfig[] = [
   {
     path: "signup",
     component: SignUp,
+  },
+  {
+    path: "logout",
+    component: Logout,
   },
 ];
 

@@ -24,10 +24,12 @@ export interface CategoryRequest {
 }
 
 export interface CategoryResponse {
-  id: string;
+  _id: string;
   name: string;
   description?: string;
   userId: string;
+  createdBy: string;
+  updatedBy: string;
   createdAt: string;
   updatedAt: string;
 }

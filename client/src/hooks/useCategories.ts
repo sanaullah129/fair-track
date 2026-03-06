@@ -1,12 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { categoryApi } from "../api/categories";
 import type { CategoryRequest, CategoryResponse } from "../types/api";
+import useAuthStore from "../stores/useAuthStore";
 
 export const useCategories = () => {
+  const { user } = useAuthStore();
+
   return useQuery({
-    queryKey: ["categories"],
-    queryFn: () => categoryApi.getAll(),
-    enabled: true,
+    queryKey: ["categories", user?.id],
+    queryFn: () => categoryApi.getByUser(user!.id),
+    enabled: !!user?.id,
+    gcTime: 0,
   });
 };
 
@@ -20,12 +24,13 @@ export const useCategory = (id: string) => {
 
 export const useCreateCategory = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
 
   return useMutation({
     mutationFn: (data: CategoryRequest) => categoryApi.create(data),
     onSuccess: () => {
       // Invalidate categories list query
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["categories", user?.id] });
     },
     onError: (error: any) => {
       console.error("Create category error:", error);
@@ -35,14 +40,15 @@ export const useCreateCategory = () => {
 
 export const useUpdateCategory = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<CategoryRequest> }) =>
       categoryApi.update(id, data),
     onSuccess: (data: CategoryResponse) => {
       // Invalidate both the specific category and categories list
-      queryClient.invalidateQueries({ queryKey: ["category", data.id] });
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["category", data._id] });
+      queryClient.invalidateQueries({ queryKey: ["categories", user?.id] });
     },
     onError: (error: any) => {
       console.error("Update category error:", error);

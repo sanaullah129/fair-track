@@ -10,6 +10,11 @@ export const categoryApi = {
     return apiClient.get<CategoryResponse>(`/category/${id}`);
   },
 
+  getByUser: async (userId: string): Promise<CategoryResponse[]> => {
+    const response = await apiClient.get<{ message: string; categories: CategoryResponse[] }>(`/category/user/${userId}`);
+    return response.categories;
+  },
+
   getAll: async (): Promise<CategoryResponse[]> => {
     return apiClient.get<CategoryResponse[]>("/category");
   },
@@ -22,3 +27,4 @@ export const categoryApi = {
     return apiClient.delete(`/category/${id}`);
   },
 };
+

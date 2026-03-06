@@ -14,6 +14,7 @@ class TransactionMiddleware {
         try {
             logger.info("Create transaction request received");
             const { amount, type, userId, categoryId, profileId, note, date } = req.body as Partial<ITransactionModel>;
+            const userId_from_token = req.user?.userId;
 
             const transactionData = {
                 amount,
@@ -23,6 +24,8 @@ class TransactionMiddleware {
                 profileId,
                 note,
                 date: date ? new Date(date) : undefined,
+                createdBy: userId_from_token!,
+                updatedBy: userId_from_token!,
             } as Partial<ITransactionModel>;
 
             if (!validateCreateTransactionData(transactionData)) {
@@ -273,6 +276,7 @@ class TransactionMiddleware {
             if (type) updatedData.type = type;
             if (note) updatedData.note = note.trim();
             if (date) updatedData.date = new Date(date);
+            updatedData.updatedBy = req.user?.userId!;
 
             const updatedTransaction = await this.transactionController.updateTransaction(id as string, updatedData);
 

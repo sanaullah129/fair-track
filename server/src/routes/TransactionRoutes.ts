@@ -86,7 +86,7 @@ router.use(auditMiddleware);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/', (req: Request, res: Response) => transactionMiddleware.createTransaction(req, res));
+router.post('/', transactionMiddleware.createTransaction);
 
 /**
  * @swagger

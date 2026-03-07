@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Box, Typography, Button, Alert, Snackbar } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
+import ConfirmDialog from "../../components/ConfirmDialog";
 import {
   useProfilesByUser,
   useCreateProfile,
@@ -11,16 +12,20 @@ import type { ProfileModel } from "../../types/api";
 import useAuthStore from "../../stores/useAuthStore";
 import ProfileList from "./ProfileList";
 import ProfileForm from "./ProfileForm";
+import Shimmer from "../../components/Shimmer";
 
 const Profiles = () => {
   const { user } = useAuthStore();
   const [openForm, setOpenForm] = useState(false);
-  const [editingProfile, setEditingProfile] = useState<ProfileModel | null>(null);
+  const [editingProfile, setEditingProfile] = useState<ProfileModel | null>(
+    null,
+  );
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   // Queries and Mutations
   const { data: profiles, isLoading, error } = useProfilesByUser();
@@ -28,6 +33,9 @@ const Profiles = () => {
   const updateProfileMutation = useUpdateProfile();
   const deleteProfileMutation = useDeleteProfile();
 
+  if (isLoading) {
+    return <Shimmer lines={5} shape="text" />;
+  }
   const handleOpenForm = () => {
     setEditingProfile(null);
     setOpenForm(true);
@@ -76,28 +84,43 @@ const Profiles = () => {
     }
   };
 
-  const handleDeleteProfile = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this profile? All transactions will be moved to your default profile.")) {
-      try {
-        await deleteProfileMutation.mutateAsync(id);
-        setSnackbar({
-          open: true,
-          message: "Profile deleted successfully!",
-          severity: "success",
-        });
-      } catch (err: any) {
-        setSnackbar({
-          open: true,
-          message: err?.message || "Failed to delete profile",
-          severity: "error",
-        });
-      }
+  const handleDeleteProfile = (id: string) => {
+    setConfirmDeleteId(id);
+  };
+
+  const confirmDeleteProfile = async () => {
+    if (!confirmDeleteId) return;
+    try {
+      await deleteProfileMutation.mutateAsync(confirmDeleteId);
+      setSnackbar({
+        open: true,
+        message: "Profile deleted successfully!",
+        severity: "success",
+      });
+    } catch (err: any) {
+      setSnackbar({
+        open: true,
+        message: err?.message || "Failed to delete profile",
+        severity: "error",
+      });
     }
+    setConfirmDeleteId(null);
+  };
+
+  const cancelDeleteProfile = () => {
+    setConfirmDeleteId(null);
   };
 
   return (
     <Box sx={{ maxWidth: 800, mx: "auto", mt: 4, mb: 4 }}>
-      <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Box
+        sx={{
+          mb: 3,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="h5" component="h1">
           Profiles
         </Typography>
@@ -127,6 +150,16 @@ const Profiles = () => {
           createProfileMutation.isPending || updateProfileMutation.isPending
         }
       />
+
+      {confirmDeleteId && (
+        <ConfirmDialog
+          open={!!confirmDeleteId}
+          title="Delete Profile"
+          content="Are you sure you want to delete this profile? All transactions will be moved to your default profile."
+          onConfirm={confirmDeleteProfile}
+          onCancel={cancelDeleteProfile}
+        />
+      )}
 
       <Snackbar
         open={snackbar.open}

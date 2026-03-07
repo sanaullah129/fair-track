@@ -49,3 +49,33 @@ export interface ProfileModel {
   createdAt: string;
   updatedAt: string;
 }
+
+export const TransactionType = {
+  CREDIT: "credit",
+  DEBIT: "debit",
+} as const;
+
+export type TransactionType = typeof TransactionType[keyof typeof TransactionType];
+
+export interface TransactionRequest {
+  amount: number;
+  type: TransactionType;
+  userId: string;
+  profileId: string;
+  categoryId: string;
+  note?: string;
+  date?: string;
+}
+
+export interface TransactionResponse {
+  _id: string;
+  amount: number;
+  date: string;
+  note?: string;
+  type: TransactionType;
+  userId: string;
+  profileId: string;
+  categoryId: string;
+  createdAt: string;
+  updatedAt: string;
+}

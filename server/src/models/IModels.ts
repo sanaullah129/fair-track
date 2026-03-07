@@ -25,7 +25,7 @@ export interface ITransactionModel extends ICommonFields {
     note?: string;
     type: TransactionType;
     userId: string;
-    categoryId: string;
+    category: string;
     profileId: string;
 }
 

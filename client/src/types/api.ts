@@ -62,7 +62,7 @@ export interface TransactionRequest {
   type: TransactionType;
   userId: string;
   profileId: string;
-  categoryId: string;
+  category: string;
   note?: string;
   date?: string;
 }

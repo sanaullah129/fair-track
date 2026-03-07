@@ -86,7 +86,7 @@ router.use(auditMiddleware);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/', transactionMiddleware.createTransaction);
+router.post('/', (req: Request, res: Response) => transactionMiddleware.createTransaction(req, res));
 
 /**
  * @swagger
@@ -153,7 +153,7 @@ router.post('/', transactionMiddleware.createTransaction);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/user/date-range', (req: Request, res: Response) => 
+router.get('/user/date-range', (req: Request, res: Response) =>
     transactionMiddleware.getTransactionsByUserAndDateRange(req, res)
 );
 
@@ -214,7 +214,7 @@ router.get('/user/date-range', (req: Request, res: Response) =>
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/user/:userId/category/:categoryId', (req: Request, res: Response) => 
+router.get('/user/:userId/category/:categoryId', (req: Request, res: Response) =>
     transactionMiddleware.getTransactionsByUserAndCategory(req, res)
 );
 
@@ -276,7 +276,7 @@ router.get('/user/:userId/category/:categoryId', (req: Request, res: Response) =
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/user/:userId/type/:type', (req: Request, res: Response) => 
+router.get('/user/:userId/type/:type', (req: Request, res: Response) =>
     transactionMiddleware.getTransactionsByUserAndType(req, res)
 );
 

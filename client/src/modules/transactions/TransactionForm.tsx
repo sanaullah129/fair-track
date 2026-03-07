@@ -12,6 +12,7 @@ import {
   Stack,
   CircularProgress,
   Alert,
+  Autocomplete,
 } from "@mui/material";
 import { useState } from "react";
 import type { SelectChangeEvent } from "@mui/material";
@@ -40,10 +41,12 @@ const TransactionForm = ({
 
   const [formData, setFormData] = useState<Partial<TransactionRequest>>({
     type: TransactionType.DEBIT,
-    date: new Date().toISOString().split("T")[0],
+    date: new Date().toISOString().slice(0, 16), // Format: YYYY-MM-DDTHH:mm
+    category: "",
   });
 
   const [error, setError] = useState<string | null>(null);
+  const categoryOptions = categories.map((cat) => cat.name);
 
   const handleTextChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -71,7 +74,7 @@ const TransactionForm = ({
       setError("Amount must be greater than 0");
       return;
     }
-    if (!formData.categoryId) {
+    if (!formData.category || formData.category.trim() === "") {
       setError("Category is required");
       return;
     }
@@ -85,11 +88,11 @@ const TransactionForm = ({
       return;
     }
 
-    // Convert date to ISO string if it's just a date string (YYYY-MM-DD)
+    // Convert date to ISO string if it's in datetime-local format (YYYY-MM-DDTHH:mm)
     let dateValue = formData.date;
-    if (dateValue && !dateValue.includes("T")) {
-      // Convert YYYY-MM-DD to ISO datetime
-      dateValue = new Date(`${dateValue}T00:00:00Z`).toISOString();
+    if (dateValue && dateValue.includes("T") && !dateValue.includes("Z")) {
+      // Convert YYYY-MM-DDTHH:mm to ISO datetime
+      dateValue = new Date(`${dateValue}:00Z`).toISOString();
     } else if (!dateValue) {
       dateValue = new Date().toISOString();
     }
@@ -100,14 +103,14 @@ const TransactionForm = ({
       type: formData.type as any,
       userId: user.id,
       profileId,
-      categoryId: formData.categoryId,
+      category: formData.category.trim(),
       note: formData.note,
       date: dateValue,
     };
 
     createTransaction(request, {
       onSuccess: () => {
-        setFormData({ type: TransactionType.DEBIT, date: new Date().toISOString().split("T")[0] });
+        setFormData({ type: TransactionType.DEBIT, date: new Date().toISOString().slice(0, 16), category: "" });
         onSuccess?.();
         onClose();
       },
@@ -119,7 +122,7 @@ const TransactionForm = ({
 
   const handleClose = () => {
     if (!isPending) {
-      setFormData({ type: TransactionType.DEBIT, date: new Date().toISOString().split("T")[0] });
+      setFormData({ type: TransactionType.DEBIT, date: new Date().toISOString().slice(0, 16), category: "" });
       setError(null);
       onClose();
     }
@@ -160,28 +163,36 @@ const TransactionForm = ({
           </FormControl>
 
           {/* Category */}
-          <FormControl fullWidth disabled={isPending}>
-            <InputLabel>Category</InputLabel>
-            <Select
-              name="categoryId"
-              value={formData.categoryId || ""}
-              onChange={handleSelectChange}
-              label="Category"
-            >
-              {categories.map((cat) => (
-                <MenuItem key={cat._id} value={cat._id}>
-                  {cat.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            freeSolo
+            options={categoryOptions}
+            value={formData.category || ""}
+            onChange={(_, value) => {
+              setFormData((prev) => ({
+                ...prev,
+                category: value || "",
+              }));
+              setError(null);
+            }}
+            onInputChange={(_, value) => {
+              setFormData((prev) => ({
+                ...prev,
+                category: value,
+              }));
+              setError(null);
+            }}
+            disabled={isPending}
+            renderInput={(params) => (
+              <TextField {...params} label="Category" placeholder="Select or type category..." />
+            )}
+          />
 
-          {/* Date */}
+          {/* Date and Time */}
           <TextField
             fullWidth
-            label="Date"
+            label="Date & Time"
             name="date"
-            type="date"
+            type="datetime-local"
             value={formData.date || ""}
             onChange={handleTextChange}
             disabled={isPending}

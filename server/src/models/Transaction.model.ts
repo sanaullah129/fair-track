@@ -41,7 +41,7 @@ const TransactionSchema = new mongoose.Schema<ITransactionModel>(
       required: true,
       ref: "Profile",
     },
-    categoryId: {
+    category: {
       type: String,
       required: true,
       ref: "Category",

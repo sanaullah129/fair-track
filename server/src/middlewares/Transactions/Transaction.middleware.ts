@@ -7,20 +7,20 @@ import { validateCreateTransactionData, validateUpdateTransactionData } from "./
 class TransactionMiddleware {
     private transactionController = new TransactionController();
 
-    public async createTransaction(
+    public createTransaction = async (
         req: Request,
         res: Response,
-    ): Promise<void> {
+    ): Promise<void> => {
         try {
             logger.info("Create transaction request received");
-            const { amount, type, userId, categoryId, profileId, note, date } = req.body as Partial<ITransactionModel>;
+            const { amount, type, userId, category, profileId, note, date } = req.body as any;
             const userId_from_token = req.user?.userId;
 
             const transactionData = {
                 amount,
                 type,
                 userId,
-                categoryId,
+                categoryId: category,
                 profileId,
                 note,
                 date: date ? new Date(date) : undefined,
@@ -29,7 +29,7 @@ class TransactionMiddleware {
             } as Partial<ITransactionModel>;
 
             if (!validateCreateTransactionData(transactionData)) {
-                logger.warn({ userId, categoryId }, "Invalid transaction data");
+                logger.warn({ userId, category }, "Invalid transaction data");
                 res.status(400).json({ message: "Invalid transaction data" });
                 return;
             }

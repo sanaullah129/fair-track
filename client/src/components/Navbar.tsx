@@ -31,6 +31,7 @@ function ResponsiveAppBar() {
 
   const handleMenuItemClick = (redirectTo: string) => {
     navigate(`/${redirectTo}`);
+    setAnchorElUser(null);
   };
 
   return (

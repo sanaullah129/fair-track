@@ -20,7 +20,7 @@ class TransactionMiddleware {
                 amount,
                 type,
                 userId,
-                categoryId: category,
+                category,
                 profileId,
                 note,
                 date: date ? new Date(date) : undefined,
@@ -91,26 +91,39 @@ class TransactionMiddleware {
         }
     }
 
-    public async getTransactionsByUser(
+    public async getTransactionsByUserProfile(
         req: Request,
         res: Response,
     ): Promise<void> {
         try {
-            logger.info("Get transactions by user request received");
-            const { userId } = req.params;
+            logger.info("Get transactions by user and profile request received");
+            const { userId, profileId } = req.params;
+            const page = Math.max(1, parseInt(req.query.page as string) || 1);
+            const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 10));
 
-            if (!userId || Array.isArray(userId)) {
-                logger.warn("User ID not provided");
-                res.status(400).json({ message: "User ID is required" });
+            if (!userId || !profileId || Array.isArray(userId) || Array.isArray(profileId)) {
+                logger.warn("User ID or Profile ID not provided");
+                res.status(400).json({ message: "User ID and Profile ID are required" });
                 return;
             }
 
-            const transactions = await this.transactionController.getTransactionsByUser(userId as string);
+            const { transactions, total } = await this.transactionController.getTransactionsByUserProfile(
+                userId as string, 
+                profileId as string,
+                page,
+                limit
+            );
 
-            logger.info({ userId }, "Transactions fetched successfully");
+            logger.info({ userId, profileId, page, limit, total }, "Transactions fetched successfully");
             res.status(200).json({
                 message: "Transactions fetched successfully",
                 transactions,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    pages: Math.ceil(total / limit),
+                },
             });
         } catch (error: any) {
             logger.error(

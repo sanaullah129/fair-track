@@ -1,4 +1,4 @@
-import { Box, Typography, Divider, Stack, Skeleton } from "@mui/material";
+import { Box, Typography, Divider, Stack, Skeleton, Pagination, Paper } from "@mui/material";
 import { useTransactionsByProfile } from "../../hooks/useTransactions";
 import { useCategories } from "../../hooks/useCategories";
 import SummaryBar from "./SummaryBar";
@@ -11,8 +11,10 @@ interface TransactionListProps {
 const TransactionList = ({ profileId }: TransactionListProps) => {
   const {
     data: transactions = [],
+    pagination,
     isLoading,
     error,
+    setPage,
   } = useTransactionsByProfile(profileId);
   const { data: categories = [] } = useCategories();
 
@@ -48,6 +50,10 @@ const TransactionList = ({ profileId }: TransactionListProps) => {
     categoryMap[cat._id] = cat.name;
   });
 
+  const handlePageChange = (_: React.ChangeEvent<unknown>, page: number) => {
+    setPage(page);
+  }
+
   return (
     <Box mt={2}>
       <SummaryBar transactions={transactions} />
@@ -56,6 +62,33 @@ const TransactionList = ({ profileId }: TransactionListProps) => {
           <TransactionRow key={tx._id} tx={tx} categoryMap={categoryMap} />
         ))}
       </Stack>
+
+      {/* Pagination Controls */}
+      {pagination.pages > 1 && (
+        <Paper
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 2,
+            p: 2,
+            mt: 2,
+            backgroundColor: "background.paper",
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            Page {pagination.page} of {pagination.pages} | Total: {pagination.total}
+          </Typography>
+          <Pagination
+            count={pagination.pages}
+            page={pagination.page}
+            onChange={handlePageChange}
+            color="primary"
+            variant="outlined"
+            shape="rounded"
+          />
+        </Paper>
+      )}
     </Box>
   );
 };

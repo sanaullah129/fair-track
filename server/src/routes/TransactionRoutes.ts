@@ -282,12 +282,12 @@ router.get('/user/:userId/type/:type', (req: Request, res: Response) =>
 
 /**
  * @swagger
- * /transaction/user/{userId}:
+ * /transaction/user/{userId}/{profileId}:
  *   get:
  *     tags:
  *       - Transaction
- *     summary: Get all transactions for a user
- *     description: Retrieve all transactions created by a specific user
+ *     summary: Get paginated transactions for user profile
+ *     description: Retrieve paginated transactions for a specific user and profile
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -297,6 +297,31 @@ router.get('/user/:userId/type/:type', (req: Request, res: Response) =>
  *         schema:
  *           type: string
  *         example: 507f1f77bcf86cd799439011
+ *       - in: path
+ *         name: profileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: 507f1f77bcf86cd799439011
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *           minimum: 1
+ *         description: Page number for pagination
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *           minimum: 1
+ *           maximum: 100
+ *         description: Number of items per page
+ *         example: 10
  *     responses:
  *       200:
  *         description: Transactions fetched successfully
@@ -312,8 +337,23 @@ router.get('/user/:userId/type/:type', (req: Request, res: Response) =>
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Transaction'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 10
+ *                     total:
+ *                       type: integer
+ *                       example: 50
+ *                     pages:
+ *                       type: integer
+ *                       example: 5
  *       400:
- *         description: User ID is required
+ *         description: User ID and Profile ID are required
  *         content:
  *           application/json:
  *             schema:
@@ -331,7 +371,7 @@ router.get('/user/:userId/type/:type', (req: Request, res: Response) =>
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/user/:userId', (req: Request, res: Response) => transactionMiddleware.getTransactionsByUser(req, res));
+router.get('/user/:userId/:profileId', (req: Request, res: Response) => transactionMiddleware.getTransactionsByUserProfile(req, res));
 
 /**
  * @swagger

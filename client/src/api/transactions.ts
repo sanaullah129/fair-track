@@ -18,18 +18,38 @@ export const transactionApi = {
     return response.transaction;
   },
 
-  getByUser: async (userId: string): Promise<TransactionResponse[]> => {
+  getByUser: async (
+    userId: string,
+    profileId: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{
+    transactions: TransactionResponse[];
+    pagination: { page: number; limit: number; total: number; pages: number };
+  }> => {
     const response = await apiClient.get<{
       message: string;
       transactions: TransactionResponse[];
-    }>(`/transaction/user/${userId}`);
-    return response.transactions || [];
+      pagination: { page: number; limit: number; total: number; pages: number };
+    }>(`/transaction/user/${userId}/${profileId}`, {
+      params: { page, limit },
+    });
+    return {
+      transactions: response.transactions || [],
+      pagination: response.pagination,
+    };
   },
 
-  getByProfile: async (userId: string, profileId: string): Promise<TransactionResponse[]> => {
-    // Get all transactions for user, then filter by profile
-    const allTransactions = await transactionApi.getByUser(userId);
-    return allTransactions.filter((t) => t.profileId === profileId);
+  getByProfile: async (
+    userId: string,
+    profileId: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{
+    transactions: TransactionResponse[];
+    pagination: { page: number; limit: number; total: number; pages: number };
+  }> => {
+    return transactionApi.getByUser(userId, profileId, page, limit);
   },
 
   getByDateRange: async (

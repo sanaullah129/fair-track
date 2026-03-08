@@ -9,9 +9,21 @@ class TransactionRepository {
         return transaction;
     }
 
-    public async findTransactionsByUserId(userId: string): Promise<ITransactionModel[]> {
-        const transactions = await TransactionModel.find({ userId }).sort({ date: -1 });
-        return transactions;
+    public async findTransactionsByUserProfile(
+        userId: string, 
+        profileId: string,
+        page: number = 1,
+        limit: number = 10
+    ): Promise<{ transactions: ITransactionModel[]; total: number }> {
+        const skip = (page - 1) * limit;
+        const [transactions, total] = await Promise.all([
+            TransactionModel.find({ userId, profileId })
+                .sort({ date: -1 })
+                .skip(skip)
+                .limit(limit),
+            TransactionModel.countDocuments({ userId, profileId })
+        ]);
+        return { transactions, total };
     }
 
     public async findTransactionsByUserAndCategory(

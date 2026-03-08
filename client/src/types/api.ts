@@ -75,7 +75,7 @@ export interface TransactionResponse {
   type: TransactionType;
   userId: string;
   profileId: string;
-  categoryId: string;
+  category: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -2,30 +2,52 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { transactionApi } from "../api/transactions";
 import type { TransactionResponse, TransactionRequest } from "../types/api";
 import useAuthStore from "../stores/useAuthStore";
+import { useState, useEffect } from "react";
 
-export const useTransactionsByUser = () => {
+interface PaginationState {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+export const useTransactionsByProfile = (profileId?: string, initialPage: number = 1) => {
   const { user } = useAuthStore();
-
-  return useQuery<TransactionResponse[]>({
-    queryKey: ["transactions", user?.id],
-    queryFn: () => transactionApi.getByUser(user!.id),
-    enabled: !!user?.id,
-    gcTime: 0,
+  const [pagination, setPagination] = useState<PaginationState>({
+    page: initialPage,
+    limit: 10,
+    total: 0,
+    pages: 0,
   });
-};
 
-export const useTransactionsByProfile = (profileId?: string) => {
-  const { user } = useAuthStore();
-
-  return useQuery<TransactionResponse[]>({
-    queryKey: ["transactions", user?.id, profileId],
+  const query = useQuery({
+    queryKey: ["transactions", user?.id, profileId, pagination.page, pagination.limit],
     queryFn: () =>
       profileId && user?.id
-        ? transactionApi.getByProfile(user.id, profileId)
-        : Promise.resolve([]),
+        ? transactionApi.getByProfile(user.id, profileId, pagination.page, pagination.limit)
+        : Promise.resolve({
+            transactions: [],
+            pagination: { page: 1, limit: 10, total: 0, pages: 0 },
+          }),
     enabled: !!user?.id && !!profileId,
     gcTime: 0,
   });
+
+  // Update pagination state when data changes
+  useEffect(() => {
+    if (query.data && query.data.pagination) {
+      setPagination(query.data.pagination);
+    }
+  }, [query.data?.pagination?.page, query.data?.pagination?.limit, query.data?.pagination?.total, query.data?.pagination?.pages]);
+
+  return {
+    data: query.data?.transactions || [],
+    pagination,
+    isLoading: query.isLoading,
+    error: query.error,
+    setPage: (page: number) => setPagination((prev) => ({ ...prev, page })),
+    setLimit: (limit: number) => setPagination((prev) => ({ ...prev, page: 1, limit })),
+  };
 };
 
 export const useTransaction = (id: string) => {

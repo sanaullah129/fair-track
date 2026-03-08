@@ -50,7 +50,7 @@ const TransactionRow = ({
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Stack direction="row" alignItems="center" gap={0.75}>
           <Typography variant="body2" fontWeight={600} noWrap>
-            {categoryMap[tx.categoryId] ?? tx.categoryId}
+            {categoryMap[tx.category] ?? tx.category}
           </Typography>
           {tx.note && (
             <Tooltip title={tx.note} placement="top" arrow>

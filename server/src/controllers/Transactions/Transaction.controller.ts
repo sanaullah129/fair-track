@@ -26,11 +26,16 @@ class TransactionController {
         }
     }
 
-    public async getTransactionsByUser(userId: string): Promise<ITransactionModel[]> {
+    public async getTransactionsByUserProfile(
+        userId: string, 
+        profileId: string,
+        page: number = 1,
+        limit: number = 10
+    ): Promise<{ transactions: ITransactionModel[]; total: number }> {
         try {
-            logger.info({ userId }, "Fetching transactions by user");
-            const transactions = await this._transactionRepository.findTransactionsByUserId(userId);
-            return transactions;
+            logger.info({ userId, profileId, page, limit }, "Fetching transactions by user and profile with pagination");
+            const result = await this._transactionRepository.findTransactionsByUserProfile(userId, profileId, page, limit);
+            return result;
         } catch (error: any) {
             logger.error(
                 { error: error.message },

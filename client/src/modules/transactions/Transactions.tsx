@@ -1,10 +1,20 @@
-import { Box, Typography, Tabs, Tab, Snackbar, Alert, Button, Stack } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Tabs,
+  Tab,
+  Snackbar,
+  Alert,
+  Button,
+  Stack,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useEffect, useState } from "react";
 import { useProfilesByUser } from "../../hooks/useProfiles";
 import Shimmer from "../../components/Shimmer";
 import TransactionList from "./TransactionList";
 import TransactionForm from "./TransactionForm";
+import { useNavigate } from "react-router";
 
 const Transactions = () => {
   const { data: profiles, error, isLoading } = useProfilesByUser();
@@ -15,6 +25,7 @@ const Transactions = () => {
     message: string;
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (error) {
@@ -48,6 +59,33 @@ const Transactions = () => {
     setTabValue(newTabValue);
   };
 
+  const handleOpenForm = () => {
+    setFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setFormOpen(false);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
+  const handleTransactionSuccess = () => {
+    setSnackbar({
+      open: true,
+      message: "Transaction created successfully!",
+      severity: "success",
+    });
+  };
+
+  const handleOverallSummaryClick = () => {
+    const currentProfile = profiles[tabValue];
+    if (currentProfile) {
+      navigate(`/overall-summary/${currentProfile._id}`);
+    }
+  };
+
   const currentProfile = profiles[tabValue];
 
   return (
@@ -61,14 +99,23 @@ const Transactions = () => {
         <Typography variant="h5" component="h1">
           Transactions
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setFormOpen(true)}
-          disabled={!currentProfile}
-        >
-          Add Transaction
-        </Button>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            variant="outlined"
+            onClick={handleOverallSummaryClick}
+            disabled={!currentProfile}
+          >
+            Check Overall Summary
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleOpenForm}
+            disabled={!currentProfile}
+          >
+            Add Transaction
+          </Button>
+        </Box>
       </Stack>
 
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -88,26 +135,20 @@ const Transactions = () => {
       {currentProfile && (
         <TransactionForm
           open={formOpen}
-          onClose={() => setFormOpen(false)}
+          onClose={handleCloseForm}
           profileId={currentProfile._id}
-          onSuccess={() => {
-            setSnackbar({
-              open: true,
-              message: "Transaction created successfully!",
-              severity: "success",
-            });
-          }}
+          onSuccess={handleTransactionSuccess}
         />
       )}
 
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        onClose={handleCloseSnackbar}
         message={snackbar.message}
       >
         <Alert
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          onClose={handleCloseSnackbar}
           severity={snackbar.severity}
         >
           {snackbar.message}

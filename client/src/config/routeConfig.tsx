@@ -16,6 +16,7 @@ const Profiles = React.lazy(() => import("../modules/profile/Profiles"));
 const Transactions = React.lazy(() => import("../modules/transactions/Transactions"));
 const Categories = React.lazy(() => import("../modules/categories/Categories"));
 const Dashboard = React.lazy(() => import("../modules/dashboard/Dashboard"));
+const Summary = React.lazy(() => import("../modules/summary/Summary"));
 
 const routes: RouteConfig[] = [
   {
@@ -37,6 +38,10 @@ const routes: RouteConfig[] = [
       {
         path: "dashboard",
         component: Dashboard,
+      },
+      {
+        path: "overall-summary/:profileId",
+        component: Summary,
       }
     ],
   },

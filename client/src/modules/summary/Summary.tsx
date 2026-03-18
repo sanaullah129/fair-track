@@ -1,4 +1,20 @@
-import { Box, Typography, Card, CardContent, Grid, Paper, Select, MenuItem, FormControl, InputLabel, Divider, Stack, List, ListItem, Chip } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Paper,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Divider,
+  Stack,
+  List,
+  ListItem,
+  Chip,
+} from "@mui/material";
 import { useState, useMemo } from "react";
 import { useProfilesByUser } from "../../hooks/useProfiles";
 import { useTransactionsByProfile } from "../../hooks/useTransactions";
@@ -10,7 +26,8 @@ import Shimmer from "../../components/Shimmer";
 const Summary = () => {
   const { data: profiles, isLoading: profilesLoading } = useProfilesByUser();
   const [selectedProfileId, setSelectedProfileId] = useState<string>("");
-  const { data: transactions = [], isLoading: transactionsLoading } = useTransactionsByProfile(selectedProfileId);
+  const { data: transactions = [], isLoading: transactionsLoading } =
+    useTransactionsByProfile(selectedProfileId);
   const { data: categories = [] } = useCategories();
 
   // Set first profile as selected on load
@@ -85,7 +102,12 @@ const Summary = () => {
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", mt: 4, mb: 4 }}>
       {/* Header */}
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 4 }}
+      >
         <Typography variant="h5" component="h1">
           Summary
         </Typography>
@@ -128,8 +150,13 @@ const Summary = () => {
       </Card>
 
       {/* Stats Grid */}
-      <Grid container spacing={2} sx={{ mb: 4 }} columns={{ xs: 12, sm: 12, md: 12 }}>
-        <Grid item xs={12} sm={6}>
+      <Grid
+        container
+        spacing={2}
+        sx={{ mb: 4 }}
+        columns={{ xs: 12, sm: 12, md: 12 }}
+      >
+        <Grid columnSpacing={{ xs: 12, sm: 6 }}>
           <Paper
             sx={{
               p: 3,
@@ -140,14 +167,26 @@ const Summary = () => {
               backgroundColor: "#e8f5e9",
             }}
           >
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{ mb: 1 }}
+            >
               <ArrowUpwardIcon sx={{ color: "#4caf50", fontSize: 28 }} />
-              <Typography variant="body2" sx={{ color: "#4caf50", fontWeight: "bold" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#4caf50", fontWeight: "bold" }}
+              >
                 Total Income
               </Typography>
             </Stack>
-            <Typography variant="h5" sx={{ color: "#2e7d32", fontWeight: "bold" }}>
-              +{summary.totalIncome.toLocaleString("en-US", {
+            <Typography
+              variant="h5"
+              sx={{ color: "#2e7d32", fontWeight: "bold" }}
+            >
+              +
+              {summary.totalIncome.toLocaleString("en-US", {
                 style: "currency",
                 currency: "INR",
               })}
@@ -155,7 +194,7 @@ const Summary = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid columnSpacing={{ xs: 12, sm: 6 }}>
           <Paper
             sx={{
               p: 3,
@@ -166,14 +205,26 @@ const Summary = () => {
               backgroundColor: "#ffebee",
             }}
           >
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{ mb: 1 }}
+            >
               <ArrowDownwardIcon sx={{ color: "#f44336", fontSize: 28 }} />
-              <Typography variant="body2" sx={{ color: "#f44336", fontWeight: "bold" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#f44336", fontWeight: "bold" }}
+              >
                 Total Expense
               </Typography>
             </Stack>
-            <Typography variant="h5" sx={{ color: "#c62828", fontWeight: "bold" }}>
-              -{summary.totalExpense.toLocaleString("en-US", {
+            <Typography
+              variant="h5"
+              sx={{ color: "#c62828", fontWeight: "bold" }}
+            >
+              -
+              {summary.totalExpense.toLocaleString("en-US", {
                 style: "currency",
                 currency: "INR",
               })}
@@ -194,7 +245,11 @@ const Summary = () => {
               <Shimmer lines={5} shape="rectangular" />
             </Box>
           ) : summary.transactions.length === 0 ? (
-            <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center", py: 3 }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ textAlign: "center", py: 3 }}
+            >
               No transactions found
             </Typography>
           ) : (
@@ -211,7 +266,10 @@ const Summary = () => {
                     }}
                   >
                     <Box sx={{ flex: 1 }}>
-                      <Typography variant="body2" sx={{ fontWeight: "bold", mb: 0.5 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: "bold", mb: 0.5 }}
+                      >
                         {categoryMap[tx.category] || tx.category}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">

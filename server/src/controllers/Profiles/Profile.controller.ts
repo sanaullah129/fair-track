@@ -102,8 +102,8 @@ class ProfileController {
             // Move all transactions from this profile to the Self profile
             await this._transactionRepository.updateTransactionProfile(id, (selfProfile as any)._id.toString(), userId);
 
-            // Delete the profile
-            const deletedProfile = await this._profileRepository.deleteProfile(id);
+            // Soft delete the profile
+            const deletedProfile = await this._profileRepository.deleteProfile(id, userId);
             logger.info({ profileId: id }, "Profile deleted successfully");
             return deletedProfile;
         } catch (error: any) {

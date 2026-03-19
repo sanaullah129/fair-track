@@ -17,6 +17,9 @@ interface ICommonFields {
     originalId?: string;
     createdBy?: string;
     updatedBy?: string;
+    // Soft delete fields
+    deletedAt?: Date | null;
+    deletedBy?: string | null;
 }
 
 export interface ITransactionModel extends ICommonFields {

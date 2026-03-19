@@ -101,10 +101,10 @@ class CategoryController {
         }
     }
 
-    public async deleteCategory(id: string): Promise<boolean> {
+    public async deleteCategory(id: string, deletedBy: string): Promise<boolean> {
         try {
             logger.info({ categoryId: id }, "Deleting category");
-            const result = await this._categoryRepository.deleteCategory(id);
+            const result = await this._categoryRepository.deleteCategory(id, deletedBy);
             if (result) {
                 logger.info({ categoryId: id }, "Category deleted successfully");
             } else {

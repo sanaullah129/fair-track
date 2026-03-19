@@ -5,7 +5,7 @@ class CategoryRepository {
     constructor() {}
 
     public async findCategoryById(id: string): Promise<ICategoryModel | null> {
-        const category = await CategoryModel.findById(id);
+        const category = await CategoryModel.findOne({ _id: id, deletedAt: null });
         return category;
     }
 
@@ -16,12 +16,13 @@ class CategoryRepository {
         const category = await CategoryModel.findOne({
             userId,
             name: { $regex: name, $options: "i" },
+            deletedAt: null,
         });
         return category;
     }
 
     public async findCategoriesByUserId(userId: string): Promise<ICategoryModel[]> {
-        const categories = await CategoryModel.find({ userId });
+        const categories = await CategoryModel.find({ userId, deletedAt: null });
         return categories;
     }
 
@@ -45,8 +46,15 @@ class CategoryRepository {
         return updatedCategory;
     }
 
-    public async deleteCategory(id: string): Promise<boolean> {
-        const result = await CategoryModel.findByIdAndDelete(id);
+    public async deleteCategory(id: string, deletedBy: string): Promise<boolean> {
+        const result = await CategoryModel.findByIdAndUpdate(
+            id,
+            {
+                deletedAt: new Date(),
+                deletedBy,
+            },
+            { new: true }
+        );
         return !!result;
     }
 }

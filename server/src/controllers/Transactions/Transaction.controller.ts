@@ -166,10 +166,10 @@ class TransactionController {
         }
     }
 
-    public async deleteTransaction(id: string): Promise<boolean> {
+    public async deleteTransaction(id: string, deletedBy: string): Promise<boolean> {
         try {
             logger.info({ transactionId: id }, "Deleting transaction");
-            const result = await this._transactionRepository.deleteTransaction(id);
+            const result = await this._transactionRepository.deleteTransaction(id, deletedBy);
             if (result) {
                 logger.info({ transactionId: id }, "Transaction deleted successfully");
             } else {

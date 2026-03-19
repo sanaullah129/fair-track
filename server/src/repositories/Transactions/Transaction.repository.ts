@@ -5,7 +5,7 @@ class TransactionRepository {
     constructor() {}
 
     public async findTransactionById(id: string): Promise<ITransactionModel | null> {
-        const transaction = await TransactionModel.findById(id);
+        const transaction = await TransactionModel.findOne({ _id: id, deletedAt: null });
         return transaction;
     }
 
@@ -17,11 +17,11 @@ class TransactionRepository {
     ): Promise<{ transactions: ITransactionModel[]; total: number }> {
         const skip = (page - 1) * limit;
         const [transactions, total] = await Promise.all([
-            TransactionModel.find({ userId, profileId })
+            TransactionModel.find({ userId, profileId, deletedAt: null })
                 .sort({ date: -1 })
                 .skip(skip)
                 .limit(limit),
-            TransactionModel.countDocuments({ userId, profileId })
+            TransactionModel.countDocuments({ userId, profileId, deletedAt: null })
         ]);
         return { transactions, total };
     }
@@ -33,6 +33,7 @@ class TransactionRepository {
         const transactions = await TransactionModel.find({
             userId,
             categoryId,
+            deletedAt: null,
         }).sort({ date: -1 });
         return transactions;
     }
@@ -44,6 +45,7 @@ class TransactionRepository {
         const transactions = await TransactionModel.find({
             userId,
             type,
+            deletedAt: null,
         }).sort({ date: -1 });
         return transactions;
     }
@@ -59,6 +61,7 @@ class TransactionRepository {
                 $gte: startDate,
                 $lte: endDate,
             },
+            deletedAt: null,
         }).sort({ date: -1 });
         return transactions;
     }
@@ -83,8 +86,15 @@ class TransactionRepository {
         return updatedTransaction;
     }
 
-    public async deleteTransaction(id: string): Promise<boolean> {
-        const result = await TransactionModel.findByIdAndDelete(id);
+    public async deleteTransaction(id: string, deletedBy: string): Promise<boolean> {
+        const result = await TransactionModel.findByIdAndUpdate(
+            id,
+            {
+                deletedAt: new Date(),
+                deletedBy,
+            },
+            { new: true }
+        );
         return !!result;
     }
 
@@ -94,7 +104,7 @@ class TransactionRepository {
         userId: string
     ): Promise<{ modifiedCount: number }> {
         const result = await TransactionModel.updateMany(
-            { profileId: oldProfileId, userId },
+            { profileId: oldProfileId, userId, deletedAt: null },
             { profileId: newProfileId }
         );
         return { modifiedCount: result.modifiedCount };

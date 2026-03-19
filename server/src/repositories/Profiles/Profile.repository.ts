@@ -12,25 +12,25 @@ class ProfileRepository {
     }
 
     public async findProfilesByUserId(userId: string, fetchActive: boolean | undefined): Promise<IProfileModel[]> {
-        const query: any = { userId };
+        const query: any = { userId, deletedAt: null };
         if (fetchActive === true) {
             query.isActive = true;
         } else if (fetchActive === false) {
             query.isActive = false;
         }
         logger.info({ query }, "Finding profiles with query");
-        // If fetchActive is undefined, no isActive filter applied (returns all)
+        // If fetchActive is undefined, no isActive filter applied (returns all non-deleted)
         const profiles = await ProfileModel.find(query).sort({ createdAt: -1 });
         return profiles;
     }
 
     public async findProfileById(id: string): Promise<IProfileModel | null> {
-        const profile = await ProfileModel.findById(id);
+        const profile = await ProfileModel.findOne({ _id: id, deletedAt: null });
         return profile;
     }
 
     public async findProfileByUserAndName(userId: string, name: string): Promise<IProfileModel | null> {
-        const profile = await ProfileModel.findOne({ userId, name });
+        const profile = await ProfileModel.findOne({ userId, name, deletedAt: null });
         return profile;
     }
 
@@ -39,8 +39,15 @@ class ProfileRepository {
         return profile;
     }
 
-    public async deleteProfile(id: string): Promise<IProfileModel | null> {
-        const profile = await ProfileModel.findByIdAndDelete(id);
+    public async deleteProfile(id: string, deletedBy: string): Promise<IProfileModel | null> {
+        const profile = await ProfileModel.findByIdAndUpdate(
+            id,
+            {
+                deletedAt: new Date(),
+                deletedBy,
+            },
+            { new: true }
+        );
         return profile;
     }
 }

@@ -190,6 +190,7 @@ class CategoryMiddleware {
         try {
             logger.info("Delete category request received");
             const { id } = req.params;
+            const deletedBy = req.user?.userId;
 
             if (!id || Array.isArray(id)) {
                 logger.warn("Category ID not provided");
@@ -204,7 +205,7 @@ class CategoryMiddleware {
                 return;
             }
 
-            await this.categoryController.deleteCategory(id as string);
+            await this.categoryController.deleteCategory(id as string, deletedBy!);
 
             logger.info({ categoryId: id }, "Category deleted successfully");
             res.status(200).json({

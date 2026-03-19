@@ -317,6 +317,7 @@ class TransactionMiddleware {
         try {
             logger.info("Delete transaction request received");
             const { id } = req.params;
+            const deletedBy = req.user?.userId;
 
             if (!id || Array.isArray(id)) {
                 logger.warn("Transaction ID not provided");
@@ -331,7 +332,7 @@ class TransactionMiddleware {
                 return;
             }
 
-            await this.transactionController.deleteTransaction(id as string);
+            await this.transactionController.deleteTransaction(id as string, deletedBy!);
 
             logger.info({ transactionId: id }, "Transaction deleted successfully");
             res.status(200).json({

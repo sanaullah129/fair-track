@@ -26,6 +26,9 @@ const Profiles = () => {
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [togglingActiveIds, setTogglingActiveIds] = useState<Set<string>>(
+    new Set(),
+  );
 
   // Queries and Mutations
   const { data: profiles, isLoading, error } = useProfilesByUser();
@@ -88,6 +91,35 @@ const Profiles = () => {
     setConfirmDeleteId(id);
   };
 
+  const handleToggleActive = async (id: string, isActive: boolean) => {
+    setTogglingActiveIds((prev) => new Set([...prev, id]));
+    try {
+      await updateProfileMutation.mutateAsync({
+        id,
+        data: { isActive },
+      });
+      setSnackbar({
+        open: true,
+        message: isActive
+          ? "Profile activated successfully!"
+          : "Profile deactivated successfully!",
+        severity: "success",
+      });
+    } catch (err: any) {
+      setSnackbar({
+        open: true,
+        message: err?.message || "Failed to update profile status",
+        severity: "error",
+      });
+    } finally {
+      setTogglingActiveIds((prev) => {
+        const updated = new Set(prev);
+        updated.delete(id);
+        return updated;
+      });
+    }
+  };
+
   const confirmDeleteProfile = async () => {
     if (!confirmDeleteId) return;
     try {
@@ -139,6 +171,8 @@ const Profiles = () => {
         error={error}
         onEdit={handleEditProfile}
         onDelete={handleDeleteProfile}
+        onToggleActive={handleToggleActive}
+        isTogglingActive={togglingActiveIds}
       />
 
       <ProfileForm

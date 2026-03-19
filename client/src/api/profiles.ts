@@ -6,9 +6,11 @@ export const profileApi = {
     return apiClient.post<ProfileModel>(`/profile`, data);
   },
 
-  getByUser: async (userId: string) => {
-    const response = await apiClient.get<{ message: string; profiles: ProfileModel[] }>(`/profile/user/${userId}`);
-    console.log("Fetched profiles:", response);
+  getByUser: async (userId: string, fetchActive?: boolean) => {
+    const url = fetchActive !== undefined 
+      ? `/profile/user/${userId}/${fetchActive}` 
+      : `/profile/user/${userId}`;
+    const response = await apiClient.get<{ message: string; profiles: ProfileModel[] }>(url);
     return response.profiles;
   },
 

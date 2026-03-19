@@ -54,7 +54,7 @@ class ProfileMiddleware {
     ): Promise<void> {
         try {
             logger.info("Get profiles by user request received");
-            const { userId } = req.params;
+            const { userId, fetchActive } = req.params;
             console.log("User ID from request params:", userId);
 
             if (!userId || userId === "undefined") {
@@ -63,7 +63,9 @@ class ProfileMiddleware {
                 return;
             }
 
-            const profiles = await this.profileController.getProfilesByUser(userId as string);
+            // Convert string "true"/"false" to boolean
+            const isActiveBoolean = fetchActive === "true" ? true : fetchActive === "false" ? false : undefined;
+            const profiles = await this.profileController.getProfilesByUser(userId as string, isActiveBoolean);
 
             logger.info({ userId }, "Profiles fetched successfully");
             res.status(200).json({
@@ -115,7 +117,7 @@ class ProfileMiddleware {
         try {
             logger.info("Update profile request received");
             const { id } = req.params;
-            const { name } = req.body as Partial<IProfileModel>;
+            const { name, isActive } = req.body as Partial<IProfileModel>;
 
             if (!id || Array.isArray(id)) {
                 logger.warn("Profile ID not provided");
@@ -138,6 +140,7 @@ class ProfileMiddleware {
 
             const updatedData: Partial<IProfileModel> = {};
             if (name) updatedData.name = name.trim();
+            if (isActive !== undefined) updatedData.isActive = isActive;
             updatedData.updatedBy = req.user?.userId!;
 
             const updatedProfile = await this.profileController.updateProfile(id as string, updatedData);

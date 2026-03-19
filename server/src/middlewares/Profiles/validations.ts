@@ -27,6 +27,12 @@ const validateUpdateProfileData = (data: Partial<IProfileModel>): boolean => {
         }
     }
 
+    if (data.isActive !== undefined) {
+        if (typeof data.isActive !== "boolean") {
+            return false;
+        }
+    }
+
     return true;
 };
 

@@ -8,6 +8,8 @@ interface ProfileListProps {
   error?: Error | null;
   onEdit: (profile: ProfileModel) => void;
   onDelete: (id: string) => void;
+  onToggleActive: (id: string, isActive: boolean) => void;
+  isTogglingActive?: Set<string>;
 }
 
 const ProfileList = ({
@@ -16,6 +18,8 @@ const ProfileList = ({
   error,
   onEdit,
   onDelete,
+  onToggleActive,
+  isTogglingActive = new Set(),
 }: ProfileListProps) => {
   if (isLoading) return <CircularProgress />;
   if (error) return <Alert severity="error">{(error as any)?.message || "Failed to load profiles"}</Alert>;
@@ -30,6 +34,8 @@ const ProfileList = ({
               profile={profile}
               onEdit={onEdit}
               onDelete={onDelete}
+              onToggleActive={onToggleActive}
+              isTogglingActive={isTogglingActive.has(profile._id)}
             />
           ))
         ) : (

@@ -23,10 +23,10 @@ class ProfileController {
         }
     }
 
-    public async getProfilesByUser(userId: string): Promise<IProfileModel[]> {
+    public async getProfilesByUser(userId: string, fetchActive?: boolean): Promise<IProfileModel[]> {
         try {
             logger.info({ userId }, "Fetching profiles for user");
-            const profiles = await this._profileRepository.findProfilesByUserId(userId);
+            const profiles = await this._profileRepository.findProfilesByUserId(userId, fetchActive);
             return profiles;
         } catch (error: any) {
             logger.error({ error: error.message }, "Error fetching profiles");

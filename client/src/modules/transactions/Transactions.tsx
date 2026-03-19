@@ -17,7 +17,7 @@ import TransactionForm from "./TransactionForm";
 import { useNavigate } from "react-router";
 
 const Transactions = () => {
-  const { data: profiles, error, isLoading } = useProfilesByUser();
+  const { data: profiles, error, isLoading } = useProfilesByUser(true);
   const [tabValue, setTabValue] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
   const [snackbar, setSnackbar] = useState<{

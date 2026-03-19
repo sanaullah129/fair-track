@@ -44,6 +44,7 @@ export interface ProfileModel {
   _id: string;
   name: string;
   userId: string;
+  isActive: boolean;
   createdBy: string;
   updatedBy: string;
   createdAt: string;

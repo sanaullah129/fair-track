@@ -43,4 +43,5 @@ export interface ICategoryModel extends ICommonFields {
 export interface IProfileModel extends ICommonFields {
     name: string;
     userId: string;
+    isActive: boolean;
 }

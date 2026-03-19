@@ -18,6 +18,11 @@ const ProfileSchema = new mongoose.Schema<IProfileModel>(
       required: true,
       ref: "Users",
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+      required: true,
+    }
   },
   {
     timestamps: true,
@@ -26,8 +31,7 @@ const ProfileSchema = new mongoose.Schema<IProfileModel>(
 );
 
 // Indexes
-ProfileSchema.index({ userId: 1 });
-ProfileSchema.index({ userId: 1, name: 1 }, { unique: true });
+ProfileSchema.index({ userId: 1, isActive: 1 });
 
 const ProfileModel: Model<IProfileModel> = mongoose.model<IProfileModel>(
   "Profile",

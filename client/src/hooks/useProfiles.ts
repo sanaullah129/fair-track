@@ -3,12 +3,12 @@ import { profileApi } from "../api/profiles";
 import type { ProfileModel } from "../types/api";
 import useAuthStore from "../stores/useAuthStore";
 
-export const useProfilesByUser = () => {
+export const useProfilesByUser = (fetchActive?: boolean) => {
   const { user } = useAuthStore();
 
   return useQuery<ProfileModel[]>({
-    queryKey: ["profiles", user?.id],
-    queryFn: () => profileApi.getByUser(user!.id),
+    queryKey: ["profiles", user?.id, fetchActive],
+    queryFn: () => profileApi.getByUser(user!.id, fetchActive),
     enabled: !!user?.id,
     gcTime: 0,
   });

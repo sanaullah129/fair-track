@@ -1,3 +1,4 @@
+import logger from "../../configs/loggerConfig";
 import { IProfileModel } from "../../models/IModels";
 import ProfileModel from "../../models/Profile.model";
 
@@ -10,8 +11,16 @@ class ProfileRepository {
         return saved.toObject();
     }
 
-    public async findProfilesByUserId(userId: string): Promise<IProfileModel[]> {
-        const profiles = await ProfileModel.find({ userId }).sort({ createdAt: -1 });
+    public async findProfilesByUserId(userId: string, fetchActive: boolean | undefined): Promise<IProfileModel[]> {
+        const query: any = { userId };
+        if (fetchActive === true) {
+            query.isActive = true;
+        } else if (fetchActive === false) {
+            query.isActive = false;
+        }
+        logger.info({ query }, "Finding profiles with query");
+        // If fetchActive is undefined, no isActive filter applied (returns all)
+        const profiles = await ProfileModel.find(query).sort({ createdAt: -1 });
         return profiles;
     }
 

@@ -11,6 +11,7 @@ router.use(authMiddleware);
 router.use(auditMiddleware);
 
 router.post('/', (req, res) => profileMiddleware.createProfile(req, res));
+router.get('/user/:userId/:fetchActive', (req, res) => profileMiddleware.getProfilesByUser(req, res));
 router.get('/user/:userId', (req, res) => profileMiddleware.getProfilesByUser(req, res));
 router.get('/:id', (req, res) => profileMiddleware.getProfile(req, res));
 router.put('/:id', (req, res) => profileMiddleware.updateProfile(req, res));

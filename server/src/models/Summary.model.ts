@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 import { ISummaryModel } from "./IModels";
+import baseFields from "./Base.model";
 
 const SummarySchema = new mongoose.Schema<ISummaryModel>(
   {
+    ...baseFields,
     profileId: {
       type: String,
       required: true,

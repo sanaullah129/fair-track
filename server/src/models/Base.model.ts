@@ -21,6 +21,7 @@ export const baseFields: SchemaDefinition = {
     type: Date,
     required: false,
     default: null,
+
   },
   deletedBy: {
     type: String,

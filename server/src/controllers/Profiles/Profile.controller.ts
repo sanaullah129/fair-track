@@ -1,14 +1,17 @@
 import ProfileRepository from "../../repositories/Profiles/Profile.repository";
 import TransactionRepository from "../../repositories/Transactions/Transaction.repository";
+import SummaryRepository from "../../repositories/Summary/Summary.repository";
 import logger from "../../configs/loggerConfig";
 import type { IProfileModel } from "../../models/IModels";
 
 class ProfileController {
     private _profileRepository: ProfileRepository;
     private _transactionRepository: TransactionRepository;
+    private _summaryRepository: SummaryRepository;
     constructor() {
         this._profileRepository = new ProfileRepository();
         this._transactionRepository = new TransactionRepository();
+        this._summaryRepository = new SummaryRepository();
     }
 
     public async createProfile(profileData: Partial<IProfileModel>): Promise<IProfileModel> {
@@ -101,6 +104,13 @@ class ProfileController {
 
             // Move all transactions from this profile to the Self profile
             await this._transactionRepository.updateTransactionProfile(id, (selfProfile as any)._id.toString(), userId);
+
+            // Migrate summary values from deleted profile to Self profile
+            await this._summaryRepository.migrateSummaryOnProfileDelete(
+                id,
+                (selfProfile as any)._id.toString(),
+                userId
+            );
 
             // Soft delete the profile
             const deletedProfile = await this._profileRepository.deleteProfile(id, userId);

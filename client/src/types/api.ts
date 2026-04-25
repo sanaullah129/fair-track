@@ -1,3 +1,5 @@
+// Existing API type definitions
+
 export interface SignUpRequest {
   username: string;
   email: string;
@@ -79,4 +81,12 @@ export interface TransactionResponse {
   category: string;
   createdAt: string;
   updatedAt: string;
+}
+
+// New Summary model definition
+export interface SummaryModel {
+  profileId: string;
+  currentBalance: number;
+  totalIncome: number;
+  totalExpense: number;
 }

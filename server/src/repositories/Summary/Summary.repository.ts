@@ -21,6 +21,65 @@ class SummaryRepository {
     }
   }
 
+  public async migrateSummaryOnProfileDelete(
+    oldProfileId: string,
+    targetProfileId: string,
+    deletedBy?: string
+  ): Promise<void> {
+    try {
+      const oldSummary = await SummaryModel.findOne({ profileId: oldProfileId, deletedAt: null });
+      if (!oldSummary) {
+        logger.info({ oldProfileId }, 'No summary found for deleted profile; skipping summary migration');
+        return;
+      }
+
+      const updateFields = {
+        $inc: {
+          currentBalance: oldSummary.currentBalance || 0,
+          totalIncome: oldSummary.totalIncome || 0,
+          totalExpense: oldSummary.totalExpense || 0,
+        },
+      };
+
+      const migratedSummary = await SummaryModel.findOneAndUpdate(
+        { profileId: targetProfileId, deletedAt: null },
+        updateFields,
+        {
+          new: true,
+          upsert: true,
+          setDefaultsOnInsert: true,
+        }
+      );
+
+      logger.info(
+        {
+          oldProfileId,
+          targetProfileId,
+          currentBalance: migratedSummary?.currentBalance,
+          totalIncome: migratedSummary?.totalIncome,
+          totalExpense: migratedSummary?.totalExpense,
+        },
+        'Migrated deleted profile summary values into target profile summary'
+      );
+
+      await SummaryModel.findOneAndUpdate(
+        { profileId: oldProfileId, deletedAt: null },
+        {
+          deletedAt: new Date(),
+          deletedBy: deletedBy || null,
+        }
+      );
+
+      logger.info({ oldProfileId, targetProfileId }, 'Old profile summary soft deleted after migration');
+    } catch (error: any) {
+      logger.error(
+        { oldProfileId, targetProfileId, error: error.message },
+        'Error migrating summary on profile delete'
+      );
+      throw error;
+    }
+  }
+
   /**
    * Create a new summary entry for a profile
    * Validates that the profile exists before creating the summary
@@ -333,6 +392,10 @@ class SummaryRepository {
         currentBalance: initialValues.currentBalance,
         totalIncome: initialValues.totalIncome,
         totalExpense: initialValues.totalExpense,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: transaction?.userId,
+        updatedBy: transaction?.userId,
       });
 
       const savedSummary = await newSummary.save();

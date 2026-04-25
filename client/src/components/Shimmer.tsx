@@ -13,11 +13,10 @@ const Shimmer = ({
   shape = "text",
   width = shape === "circular" ? 40 : shape === "rectangular" ? 210 : undefined,
   height = shape === "circular" ? 40 : shape === "rectangular" ? 24 : undefined,
-  spacing = 1,
 }: ShimmerProps) => {
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", mt: 4, mb: 4 }}>
-      <Stack spacing={spacing}>
+    <Box sx={{ maxWidth: 800, mx: "auto", mt: { xs: 2, sm: 4 }, mb: { xs: 4, sm: 4 }, px: { xs: 1, sm: 0 } }}>
+      <Stack spacing={{ xs: 0.75, sm: 1 }}>
         {Array.from({ length: lines }).map((_, i) => (
           <Skeleton key={i} variant={shape} width={width} height={height} animation="wave" />
         ))}

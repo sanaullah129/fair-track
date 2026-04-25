@@ -43,8 +43,8 @@ const Transactions = () => {
 
   if (!profiles || profiles.length === 0) {
     return (
-      <Box sx={{ maxWidth: 800, mx: "auto", mt: 4, mb: 4 }}>
-        <Typography variant="h5" component="h1" gutterBottom>
+      <Box sx={{ maxWidth: { xs: "95%", sm: 800 }, mx: "auto", mt: { xs: 2, sm: 4 }, mb: { xs: 12, sm: 4 }, px: { xs: 1, sm: 0 } }}>
+        <Typography variant="h5" component="h1" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }}>
           Transactions
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -89,21 +89,22 @@ const Transactions = () => {
   const currentProfile = profiles[tabValue];
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", mt: 4, mb: 4 }}>
+    <Box sx={{ maxWidth: { xs: "95%", sm: 800 }, mx: "auto", mt: { xs: 2, sm: 4 }, mb: { xs: 12, sm: 4 }, px: { xs: 1, sm: 0 } }}>
       <Stack
-        direction="row"
+        direction={{ xs: "column", sm: "row" }}
         justifyContent="space-between"
-        alignItems="center"
-        sx={{ mb: 2 }}
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        sx={{ mb: { xs: 2, sm: 2 }, gap: { xs: 2, sm: 0 } }}
       >
-        <Typography variant="h5" component="h1">
+        <Typography variant="h5" component="h1" sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }}>
           Transactions
         </Typography>
-        <Box sx={{ display: "flex", gap: 1 }}>
+        <Box sx={{ display: "flex", gap: 1, flexDirection: { xs: 'column', sm: 'row' }, width: { xs: '100%', sm: 'auto' } }}>
           <Button
             variant="outlined"
             onClick={handleOverallSummaryClick}
             disabled={!currentProfile}
+            sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
           >
             Check Overall Summary
           </Button>
@@ -112,6 +113,7 @@ const Transactions = () => {
             startIcon={<AddIcon />}
             onClick={handleOpenForm}
             disabled={!currentProfile}
+            sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
           >
             Add Transaction
           </Button>

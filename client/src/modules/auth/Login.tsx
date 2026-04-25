@@ -22,8 +22,17 @@ const Login = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 520, mx: "auto", mt: 8, display: "flex", flexDirection: "column", gap: 2 }}>
-      <Typography variant="h5">Sign in</Typography>
+    <Box component="form" onSubmit={handleSubmit} sx={{ 
+      maxWidth: { xs: "95%", sm: 520 }, 
+      mx: "auto", 
+      mt: { xs: 4, sm: 8 }, 
+      mb: { xs: 12, sm: 4 },
+      display: "flex", 
+      flexDirection: "column", 
+      gap: 2,
+      px: { xs: 2, sm: 0 }
+    }}>
+      <Typography variant="h5" sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }}>Sign in</Typography>
       {error && <Alert severity="error">{error instanceof Error ? error.message : "An error occurred"}</Alert>}
       <TextField label="Username or Email" name="usernameOrEmail" value={form.usernameOrEmail} onChange={handleChange} required disabled={isPending} />
       <TextField label="Password" name="password" type="password" value={form.password} onChange={handleChange} required disabled={isPending} />

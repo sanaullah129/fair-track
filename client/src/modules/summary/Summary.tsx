@@ -75,8 +75,8 @@ const Summary = () => {
 
   if (!profiles || profiles.length === 0) {
     return (
-      <Box sx={{ maxWidth: 1000, mx: "auto", mt: 4, mb: 4 }}>
-        <Typography variant="h5" component="h1" gutterBottom>
+      <Box sx={{ maxWidth: { xs: "95%", sm: 1000 }, mx: "auto", mt: { xs: 2, sm: 4 }, mb: { xs: 12, sm: 4 }, px: { xs: 1, sm: 0 } }}>
+        <Typography variant="h5" component="h1" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }}>
           Summary
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -87,7 +87,7 @@ const Summary = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 1000, mx: "auto", mt: 4, mb: 4 }}>
+    <Box sx={{ maxWidth: { xs: "95%", sm: 1000 }, mx: "auto", mt: { xs: 2, sm: 4 }, mb: { xs: 12, sm: 4 }, px: { xs: 1, sm: 0 } }}>
       <SummaryHeader
         profiles={profiles}
         activeProfileId={activeProfileId}

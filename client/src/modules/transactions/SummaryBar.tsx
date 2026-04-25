@@ -19,13 +19,14 @@ const SummaryBar = ({
     <Box
       sx={{
         display: "flex",
-        gap: 2,
+        gap: { xs: 1, sm: 2 },
         mb: 2,
-        p: 2,
-        borderRadius: 2,
+        p: { xs: 1.5, sm: 2 },
+        borderRadius: { xs: 1, sm: 2 },
         bgcolor: "background.paper",
         border: "1px solid",
         borderColor: "divider",
+        flexDirection: { xs: 'column', sm: 'row' }
       }}
     >
       {[
@@ -38,10 +39,10 @@ const SummaryBar = ({
         },
       ].map((item, i) => (
         <Box key={i} sx={{ flex: 1, textAlign: "center" }}>
-          <Typography variant="caption" color="text.secondary" display="block">
+          <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
             {item.label}
           </Typography>
-          <Typography variant="body2" fontWeight={700} color={item.color}>
+          <Typography variant="body2" fontWeight={700} color={item.color} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
             {formatCurrency(Math.abs(item.value))}
           </Typography>
         </Box>

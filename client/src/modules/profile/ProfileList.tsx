@@ -26,7 +26,7 @@ const ProfileList = ({
 
   return (
     <Box>
-      <List>
+      <List sx={{ width: "100%", p: { xs: 0.5, sm: 0 } }}>
         {profiles && profiles.length > 0 ? (
           profiles.map((profile) => (
             <ProfileItem

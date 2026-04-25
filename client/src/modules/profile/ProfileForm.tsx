@@ -1,5 +1,5 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { ProfileModel } from "../../types/api";
 
 interface ProfileFormProps {
@@ -10,24 +10,15 @@ interface ProfileFormProps {
   editingProfile?: ProfileModel | null;
 }
 
-const ProfileForm = ({
+const ProfileFormContent = ({
   open,
   onClose,
   onSubmit,
   isLoading = false,
   editingProfile,
 }: ProfileFormProps) => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(editingProfile?.name ?? "");
   const [errors, setErrors] = useState<{ name?: string }>({});
-
-  useEffect(() => {
-    if (editingProfile) {
-      setName(editingProfile.name);
-    } else {
-      setName("");
-    }
-    setErrors({});
-  }, [editingProfile, open]);
 
   const handleSubmit = () => {
     // Validation
@@ -85,6 +76,13 @@ const ProfileForm = ({
       </DialogActions>
     </Dialog>
   );
+};
+
+const ProfileForm = (props: ProfileFormProps) => {
+  const { open, editingProfile } = props;
+  const key = `${open}-${editingProfile?._id ?? "new"}`;
+
+  return <ProfileFormContent key={key} {...props} />;
 };
 
 export default ProfileForm;

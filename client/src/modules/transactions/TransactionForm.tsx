@@ -130,9 +130,9 @@ const TransactionForm = ({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Add Transaction</DialogTitle>
-      <DialogContent sx={{ pt: 2 }}>
-        <Stack spacing={2}>
+      <DialogTitle sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' }, p: { xs: 1.5, sm: 2 } }}>Add Transaction</DialogTitle>
+      <DialogContent sx={{ pt: { xs: 1.5, sm: 2 }, px: { xs: 1.5, sm: 2 } }}>
+        <Stack spacing={{ xs: 1.5, sm: 2 }}>
           {error && <Alert severity="error">{error}</Alert>}
 
           {/* Amount */}

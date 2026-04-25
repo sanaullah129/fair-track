@@ -1,4 +1,4 @@
-import { ListItem, ListItemText, Box, IconButton, Tooltip, Switch } from "@mui/material";
+import { ListItem, ListItemText, Box, IconButton, Tooltip, Switch, useMediaQuery } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import type { ProfileModel } from "../../types/api";
 
@@ -12,29 +12,30 @@ interface ProfileItemProps {
 
 const ProfileItem = ({ profile, onEdit, onDelete, onToggleActive, isTogglingActive = false }: ProfileItemProps) => {
   const isSelfProfile = profile.name === "Self";
+  const isMobile = useMediaQuery('(max-width:600px)');
 
   return (
     <ListItem
       secondaryAction={
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, sm: 1 } }}>
           <Tooltip title={profile.isActive ? "Deactivate" : "Activate"}>
             <Switch
               edge="end"
               checked={profile.isActive}
               onChange={(e) => onToggleActive(profile._id, e.target.checked)}
               disabled={isTogglingActive || isSelfProfile}
-              size="small"
+              size={isMobile ? "small" : "medium"}
             />
           </Tooltip>
           <Tooltip title="Edit">
             <IconButton
               edge="end"
               onClick={() => onEdit(profile)}
-              size="small"
+              size={isMobile ? "small" : "large"}
               disabled={isTogglingActive}
-              sx={{ mr: 1 }}
+              sx={{ mr: { xs: 0.5, sm: 1 } }}
             >
-              <EditIcon />
+              <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           <Tooltip title={isSelfProfile ? "Cannot delete default profile" : "Delete"}>
@@ -42,11 +43,11 @@ const ProfileItem = ({ profile, onEdit, onDelete, onToggleActive, isTogglingActi
               <IconButton
                 edge="end"
                 onClick={() => onDelete(profile._id)}
-                size="small"
+                size={isMobile ? "small" : "large"}
                 color="error"
                 disabled={isSelfProfile || isTogglingActive}
               >
-                <DeleteIcon />
+                <DeleteIcon fontSize="small" />
               </IconButton>
             </span>
           </Tooltip>
@@ -55,12 +56,15 @@ const ProfileItem = ({ profile, onEdit, onDelete, onToggleActive, isTogglingActi
     >
       <ListItemText
         primary={`${profile.name}${isSelfProfile ? " (Default)" : ""}${!profile.isActive ? " (Inactive)" : ""}`}
+        slotProps={{
+          primary: { fontSize: { xs: '0.875rem', sm: '1rem' } }
+        }}
         secondary={
           <>
-            <span style={{ fontSize: "0.75rem", marginTop: "4px", color: "#999", display: "block" }}>
+            <span style={{ fontSize: "0.65rem", marginTop: "4px", color: "#999", display: "block" }}>
               Created: {new Date(profile.createdAt).toLocaleString()}
             </span>
-            <span style={{ fontSize: "0.75rem", color: "#999", display: "block" }}>
+            <span style={{ fontSize: "0.65rem", color: "#999", display: "block" }}>
               Updated: {new Date(profile.updatedAt).toLocaleString()}
             </span>
           </>

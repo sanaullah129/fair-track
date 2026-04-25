@@ -42,7 +42,7 @@ const CategoryList = ({
   }
 
   return (
-    <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+    <List sx={{ width: "100%", bgcolor: "background.paper", p: { xs: 0.5, sm: 0 } }}>
       {categories.map((category) => (
         <CategoryItem
           key={category._id}

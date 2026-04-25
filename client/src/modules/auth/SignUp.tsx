@@ -42,15 +42,17 @@ const SignUp = () => {
       component="form"
       onSubmit={handleSubmit}
       sx={{
-        maxWidth: 520,
+        maxWidth: { xs: "95%", sm: 520 },
         mx: "auto",
-        mt: 8,
+        mt: { xs: 4, sm: 8 },
+        mb: { xs: 12, sm: 4 },
         display: "flex",
         flexDirection: "column",
         gap: 2,
+        px: { xs: 2, sm: 0 }
       }}
     >
-      <Typography variant="h5">Create account</Typography>
+      <Typography variant="h5" sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }}>Create account</Typography>
       {error && (
         <Alert severity="error">
           {error instanceof Error ? error.message : "An error occurred"}

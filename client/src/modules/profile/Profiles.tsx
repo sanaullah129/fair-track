@@ -144,16 +144,18 @@ const Profiles = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", mt: 4, mb: 4 }}>
+    <Box sx={{ maxWidth: { xs: "95%", sm: 800 }, mx: "auto", mt: { xs: 2, sm: 4 }, mb: { xs: 12, sm: 4 }, px: { xs: 1, sm: 0 } }}>
       <Box
         sx={{
-          mb: 3,
+          mb: { xs: 2, sm: 3 },
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: { xs: "flex-start", sm: "center" },
+          flexDirection: { xs: "column", sm: "row" },
+          gap: { xs: 2, sm: 0 }
         }}
       >
-        <Typography variant="h5" component="h1">
+        <Typography variant="h5" component="h1" sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }}>
           Profiles
         </Typography>
         <Button

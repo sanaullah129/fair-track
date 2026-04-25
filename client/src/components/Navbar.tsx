@@ -11,15 +11,31 @@ import {
   Avatar,
   Button,
   Tooltip,
+  useMediaQuery,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
 } from "@mui/material";
 import { pageNames, settings } from "../utils/constants";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import SwapCallsIcon from "@mui/icons-material/SwapCalls";
+import PeopleIcon from "@mui/icons-material/People";
 
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null,
   );
   const navigate = useNavigate();
+  const location = useLocation();
+  const isMobile = useMediaQuery("(max-width:600px)");
+
+  // Map page names to their corresponding icons
+  const iconMap: Record<string, React.ReactNode> = {
+    "/transactions": <SwapCallsIcon />,
+    "/dashboard": <DashboardIcon />,
+    "/profiles": <PeopleIcon />,
+  };
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -34,6 +50,53 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  const handleBottomNavChange = (
+    _event: React.SyntheticEvent,
+    newValue: string,
+  ) => {
+    navigate(newValue);
+  };
+
+  // Mobile Bottom Navigation
+  if (isMobile) {
+    return (
+      <Paper
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+        }}
+        elevation={3}
+      >
+        <BottomNavigation
+          value={location.pathname}
+          onChange={handleBottomNavChange}
+          sx={{
+            borderTop: "1px solid #e0e0e0",
+          }}
+        >
+          {pageNames.map((page) => (
+            <BottomNavigationAction
+              key={page.path}
+              label={page.name}
+              value={page.path}
+              icon={iconMap[page.path]}
+              sx={{
+                py: 1,
+                "&.Mui-selected": {
+                  color: "primary.main",
+                },
+              }}
+            />
+          ))}
+        </BottomNavigation>
+      </Paper>
+    );
+  }
+
+  // Desktop Navigation
   return (
     <AppBar position="static">
       <Container maxWidth="xl">

@@ -33,4 +33,5 @@ const useAuthStore = create<AuthStoreState>()(
   )
 );
 
+export type { AuthUser, AuthStoreState };
 export default useAuthStore;

@@ -26,7 +26,6 @@ const SummarySchema = new mongoose.Schema<ISummaryModel>(
   { timestamps: true }
 );
 
-SummarySchema.index({ profileId: 1 });
 
 const SummaryModel = mongoose.model<ISummaryModel>("Summary", SummarySchema);
 export default SummaryModel;

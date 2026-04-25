@@ -1,12 +1,15 @@
 import TransactionRepository from "../../repositories/Transactions/Transaction.repository";
 import ProfileRepository from "../../repositories/Profiles/Profile.repository";
+import SummaryRepository from "../../repositories/Summary/Summary.repository";
 import logger from "../../configs/loggerConfig";
 import type { ITransactionModel } from "../../models/IModels";
 
 class TransactionController {
     private _transactionRepository: TransactionRepository;
+    private _summaryRepository: SummaryRepository;
     constructor() {
         this._transactionRepository = new TransactionRepository();
+        this._summaryRepository = new SummaryRepository();
     }
 
     public async getTransaction(id: string): Promise<ITransactionModel | null> {
@@ -134,6 +137,10 @@ class TransactionController {
                 { transactionId: (transaction as any)._id },
                 "Transaction created successfully"
             );
+
+            // Update summary asynchronously without await
+            this._summaryRepository.updateSummaryOnTransactionCreate(transaction);
+
             return transaction;
         } catch (error: any) {
             logger.error(
@@ -150,11 +157,22 @@ class TransactionController {
     ): Promise<ITransactionModel | null> {
         try {
             logger.info({ transactionId: id }, "Updating transaction");
+
+            // Fetch the old transaction to capture current values
+            const oldTransaction = await this._transactionRepository.findTransactionById(id);
+            if (!oldTransaction) {
+                logger.warn({ transactionId: id }, "Transaction not found for update");
+                return null;
+            }
+
             const transaction = await this._transactionRepository.updateTransaction(id, transactionData);
             if (!transaction) {
                 logger.warn({ transactionId: id }, "Transaction not found for update");
             } else {
                 logger.info({ transactionId: id }, "Transaction updated successfully");
+
+                // Update summary asynchronously without await
+                this._summaryRepository.updateSummaryOnTransactionUpdate(oldTransaction, transaction);
             }
             return transaction;
         } catch (error: any) {
@@ -169,9 +187,20 @@ class TransactionController {
     public async deleteTransaction(id: string, deletedBy: string): Promise<boolean> {
         try {
             logger.info({ transactionId: id }, "Deleting transaction");
+
+            // Fetch the transaction before deletion to capture its values
+            const transaction = await this._transactionRepository.findTransactionById(id);
+            if (!transaction) {
+                logger.warn({ transactionId: id }, "Transaction not found for deletion");
+                return false;
+            }
+
             const result = await this._transactionRepository.deleteTransaction(id, deletedBy);
             if (result) {
                 logger.info({ transactionId: id }, "Transaction deleted successfully");
+
+                // Update summary asynchronously without await
+                this._summaryRepository.updateSummaryOnTransactionDelete(transaction);
             } else {
                 logger.warn({ transactionId: id }, "Transaction not found for deletion");
             }

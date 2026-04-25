@@ -3,6 +3,7 @@ import userRoutes from "./routes/UserRoutes";
 import categoryRoutes from "./routes/CategoryRoutes";
 import transactionRoutes from "./routes/TransactionRoutes";
 import profileRoutes from "./routes/ProfileRoutes";
+import summaryRoutes from "./routes/SummaryRoutes";
 
 const router = Router();
 
@@ -10,6 +11,7 @@ router.use('/user', userRoutes);
 router.use('/category', categoryRoutes);
 router.use('/transaction', transactionRoutes);
 router.use('/profile', profileRoutes);
+router.use('/summary', summaryRoutes);
 
 /**
  * Health check route

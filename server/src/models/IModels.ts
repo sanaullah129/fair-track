@@ -48,3 +48,10 @@ export interface IProfileModel extends ICommonFields {
     userId: string;
     isActive: boolean;
 }
+
+export interface ISummaryModel extends ICommonFields {
+    currentBalance: number;
+    totalIncome: number;
+    totalExpense: number;
+    profileId: string;
+}

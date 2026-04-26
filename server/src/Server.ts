@@ -77,10 +77,11 @@ export default class Server {
     }
 
     public setUpCors(): void {
+        logger.info('Setting up CORS with frontend URL: ' + this.config.frontendUrl);
         // Allow credentials (cookies) and reflect origin
         this.app.use(
             cors({
-                origin: this.config.frontendUrl || "http://localhost:5173",
+                origin: this.config.frontendUrl,
                 credentials: true,
             })
         );

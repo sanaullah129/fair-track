@@ -80,7 +80,7 @@ export default class Server {
         // Allow credentials (cookies) and reflect origin
         this.app.use(
             cors({
-                origin: true,
+                origin: this.config.frontendUrl || "http://localhost:5173",
                 credentials: true,
             })
         );

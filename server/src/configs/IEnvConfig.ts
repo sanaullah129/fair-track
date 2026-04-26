@@ -6,4 +6,5 @@ export interface IEnvConfig {
     jwtExpire: unknown;
     bcryptRounds: number;
     apiPrefix: string;
+    frontendUrl: string;
 }

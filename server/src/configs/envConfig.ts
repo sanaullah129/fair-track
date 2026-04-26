@@ -11,6 +11,7 @@ const envConfig: IEnvConfig = Object.freeze({
   jwtExpire: process.env.JWT_EXPIRE || '1d',
   bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS || '10', 10),
   apiPrefix: '/api',
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
 });
 
 export default envConfig;

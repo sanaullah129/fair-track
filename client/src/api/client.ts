@@ -1,4 +1,5 @@
 import { API_CONFIG } from "./config";
+import useAuthStore from "../stores/useAuthStore";
 
 export interface ApiError {
   message: string;
@@ -46,9 +47,11 @@ export async function fetchAPI<T = any>(
   }
 
   // Build headers
+  const token = useAuthStore.getState().token;
   const headers: HeadersInit = {
     ...API_CONFIG.headers,
     ...(requestOptions.headers || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
   try {

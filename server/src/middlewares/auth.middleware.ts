@@ -17,7 +17,7 @@ export const authMiddleware = (
 ): void => {
     try {
         // Read token from cookies instead of Authorization header
-        const token = req.cookies.token;
+        const token = req.cookies.token || req.headers["authorization"]?.split(" ")[1];
 
         if (!token) {
             logger.warn({ path: req.path }, "No token provided");

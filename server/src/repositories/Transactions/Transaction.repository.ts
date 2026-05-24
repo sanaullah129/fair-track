@@ -86,16 +86,16 @@ class TransactionRepository {
         return updatedTransaction;
     }
 
-    public async deleteTransaction(id: string, deletedBy: string): Promise<boolean> {
-        const result = await TransactionModel.findByIdAndUpdate(
-            id,
+    public async deleteTransaction(id: string, userId: string): Promise<ITransactionModel | null> {
+        const deletedTransaction = await TransactionModel.findOneAndUpdate(
+            { _id: id, userId, deletedAt: null },
             {
                 deletedAt: new Date(),
-                deletedBy,
+                deletedBy: userId,
             },
             { new: true }
         );
-        return !!result;
+        return deletedTransaction;
     }
 
     public async updateTransactionProfile(

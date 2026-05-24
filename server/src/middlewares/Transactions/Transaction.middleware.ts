@@ -316,27 +316,36 @@ class TransactionMiddleware {
     ): Promise<void> {
         try {
             logger.info("Delete transaction request received");
-            const { id } = req.params;
+            const { id: transactionId } = req.params;
             const deletedBy = req.user?.userId;
 
-            if (!id || Array.isArray(id)) {
+            if (!transactionId || Array.isArray(transactionId)) {
                 logger.warn("Transaction ID not provided");
                 res.status(400).json({ message: "Transaction ID is required" });
                 return;
             }
 
-            const existingTransaction = await this.transactionController.getTransaction(id as string);
-            if (!existingTransaction) {
-                logger.warn({ transactionId: id }, "Transaction not found");
+            if (!deletedBy) {
+                logger.warn({ transactionId }, "Unauthorized delete transaction attempt");
+                res.status(401).json({ message: "Unauthorized" });
+                return;
+            }
+
+            const deletedTransaction = await this.transactionController.deleteTransaction(
+                transactionId as string,
+                deletedBy
+            );
+
+            if (!deletedTransaction) {
+                logger.warn({ transactionId }, "Transaction not found");
                 res.status(404).json({ message: "Transaction not found" });
                 return;
             }
 
-            await this.transactionController.deleteTransaction(id as string, deletedBy!);
-
-            logger.info({ transactionId: id }, "Transaction deleted successfully");
+            logger.info({ transactionId }, "Transaction deleted successfully");
             res.status(200).json({
                 message: "Transaction deleted successfully",
+                transaction: deletedTransaction,
             });
         } catch (error: any) {
             logger.error(

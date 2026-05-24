@@ -1,4 +1,5 @@
 import SummaryModel from '../../models/Summary.model';
+import TransactionModel from '../../models/Transaction.model';
 import ProfileRepository from '../Profiles/Profile.repository';
 import type { ISummaryModel, ITransactionModel } from '../../models/IModels';
 import logger from '../../configs/loggerConfig';
@@ -201,6 +202,80 @@ class SummaryRepository {
         { error: error.message },
         'Error in updateSummaryOnTransactionDelete'
       );
+    }
+  }
+
+  public async recomputeSummaryForProfile(userId: string, profileId: string): Promise<void> {
+    try {
+      if (!userId || !profileId) {
+        logger.warn({ userId, profileId }, 'Skipping summary recompute - missing required identifiers');
+        return;
+      }
+
+      const profile = await this._profileRepository.findProfileById(profileId);
+      if (!profile) {
+        logger.warn({ profileId }, 'Profile not found for summary recompute');
+        return;
+      }
+
+      if (profile.userId.toString() !== userId.toString()) {
+        logger.warn({ userId, profileId }, 'User does not own profile for summary recompute');
+        return;
+      }
+
+      const transactions = await TransactionModel.find({
+        profileId,
+        userId,
+        deletedAt: null,
+      });
+
+      const summaryValues = transactions.reduce(
+        (acc, tx) => {
+          if (tx.type === 'credit') {
+            acc.totalIncome += tx.amount;
+            acc.currentBalance += tx.amount;
+          } else if (tx.type === 'debit') {
+            acc.totalExpense += tx.amount;
+            acc.currentBalance -= tx.amount;
+          }
+          return acc;
+        },
+        { currentBalance: 0, totalIncome: 0, totalExpense: 0 }
+      );
+
+      const updatedSummary = await SummaryModel.findOneAndUpdate(
+        { profileId, deletedAt: null },
+        {
+          currentBalance: summaryValues.currentBalance,
+          totalIncome: summaryValues.totalIncome,
+          totalExpense: summaryValues.totalExpense,
+          updatedAt: new Date(),
+          updatedBy: userId,
+        },
+        { new: true, upsert: true, setDefaultsOnInsert: true }
+      );
+
+      if (!updatedSummary) {
+        logger.warn({ profileId }, 'Failed to recompute summary for profile');
+        return;
+      }
+
+      logger.info(
+        {
+          profileId,
+          userId,
+          currentBalance: updatedSummary.currentBalance,
+          totalIncome: updatedSummary.totalIncome,
+          totalExpense: updatedSummary.totalExpense,
+        },
+        'Summary recomputed successfully for profile'
+      );
+    } catch (error: any) {
+      logger.error(
+        { userId, profileId, error: error.message },
+        'Error recomputing summary for profile'
+      );
+      throw error;
     }
   }
 

@@ -1,6 +1,26 @@
-import { Box, Typography, Divider, Stack, Skeleton, Pagination, Paper, useMediaQuery } from "@mui/material";
-import { useTransactionsByProfile } from "../../hooks/useTransactions";
+import {
+  Box,
+  Typography,
+  Divider,
+  Stack,
+  Skeleton,
+  Pagination,
+  Paper,
+  useMediaQuery,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Snackbar,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
+import { useState } from "react";
+import { useTransactionsByProfile, useDeleteTransaction } from "../../hooks/useTransactions";
 import { useCategories } from "../../hooks/useCategories";
+import { formatCurrency } from "./helpers/helperFunc";
+import type { TransactionResponse } from "../../types/api";
 import SummaryBar from "./SummaryBar";
 import TransactionRow from "./TransactionRow";
 
@@ -16,7 +36,15 @@ const TransactionList = ({ profileId }: TransactionListProps) => {
     error,
     setPage,
   } = useTransactionsByProfile(profileId);
+  const { deleteTransaction, isLoading: isDeleting } = useDeleteTransaction(profileId);
   const { data: categories = [] } = useCategories();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState<TransactionResponse | null>(null);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error";
+  }>({ open: false, message: "", severity: "success" });
   const isMobile = useMediaQuery('(max-width:600px)');
 
   if (isLoading) {
@@ -55,14 +83,109 @@ const TransactionList = ({ profileId }: TransactionListProps) => {
     setPage(page);
   }
 
+  const handleDeleteClick = (transaction: TransactionResponse) => {
+    setTransactionToDelete(transaction);
+    setConfirmOpen(true);
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmOpen(false);
+    setTransactionToDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!transactionToDelete) {
+      return;
+    }
+
+    try {
+      await deleteTransaction(transactionToDelete._id);
+      setConfirmOpen(false);
+      setTransactionToDelete(null);
+      setSnackbar({
+        open: true,
+        message: "Transaction deleted successfully!",
+        severity: "success",
+      });
+    } catch (error: any) {
+      setSnackbar({
+        open: true,
+        message: error?.message || "Failed to delete transaction",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
   return (
     <Box mt={{ xs: 1, sm: 2 }}>
       <SummaryBar transactions={transactions} />
       <Stack divider={<Divider flexItem />} spacing={0}>
         {transactions.map((tx) => (
-          <TransactionRow key={tx._id} tx={tx} categoryMap={categoryMap} />
+          <TransactionRow
+            key={tx._id}
+            tx={tx}
+            categoryMap={categoryMap}
+            onDelete={() => handleDeleteClick(tx)}
+            isDeleting={isDeleting && transactionToDelete?._id === tx._id}
+          />
         ))}
       </Stack>
+
+      <Dialog open={confirmOpen} onClose={handleCancelDelete} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
+          Delete Transaction
+        </DialogTitle>
+        <DialogContent sx={{ pt: { xs: 1.5, sm: 2 }, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+          <Typography sx={{ mb: 1 }}>
+            Are you sure you want to delete this transaction?
+          </Typography>
+          {transactionToDelete && (
+            <Box sx={{ mt: 1 }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                Amount: {formatCurrency(transactionToDelete.amount)}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Category: {categoryMap[transactionToDelete.category] ?? transactionToDelete.category}
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: { xs: 1.5, sm: 2 }, gap: 1 }}>
+          <Button
+            onClick={handleCancelDelete}
+            variant="outlined"
+            sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+            disabled={isDeleting}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            color="error"
+            variant="contained"
+            sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+            disabled={isDeleting}
+            startIcon={isDeleting ? <CircularProgress size={16} color="inherit" /> : undefined}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message={snackbar.message}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
 
       {/* Pagination Controls */}
       {pagination.pages > 1 && (

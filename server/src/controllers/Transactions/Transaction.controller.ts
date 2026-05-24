@@ -184,27 +184,21 @@ class TransactionController {
         }
     }
 
-    public async deleteTransaction(id: string, deletedBy: string): Promise<boolean> {
+    public async deleteTransaction(id: string, userId: string): Promise<ITransactionModel | null> {
         try {
-            logger.info({ transactionId: id }, "Deleting transaction");
+            logger.info({ transactionId: id, userId }, "Deleting transaction");
 
-            // Fetch the transaction before deletion to capture its values
-            const transaction = await this._transactionRepository.findTransactionById(id);
-            if (!transaction) {
-                logger.warn({ transactionId: id }, "Transaction not found for deletion");
-                return false;
+            const deletedTransaction = await this._transactionRepository.deleteTransaction(id, userId);
+            if (!deletedTransaction) {
+                logger.warn({ transactionId: id, userId }, "Transaction not found for deletion");
+                return null;
             }
 
-            const result = await this._transactionRepository.deleteTransaction(id, deletedBy);
-            if (result) {
-                logger.info({ transactionId: id }, "Transaction deleted successfully");
+            logger.info({ transactionId: id, userId }, "Transaction deleted successfully");
 
-                // Update summary asynchronously without await
-                this._summaryRepository.updateSummaryOnTransactionDelete(transaction);
-            } else {
-                logger.warn({ transactionId: id }, "Transaction not found for deletion");
-            }
-            return result;
+            // Recompute summary asynchronously without affecting response
+            this._summaryRepository.recomputeSummaryForProfile(userId, deletedTransaction.profileId).catch(console.error);
+            return deletedTransaction;
         } catch (error: any) {
             logger.error(
                 { error: error.message },

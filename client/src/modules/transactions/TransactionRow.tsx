@@ -1,14 +1,18 @@
-import { Chip, Stack, Typography, Box, Tooltip, useMediaQuery } from "@mui/material";
-import { NoteAltOutlined, TrendingDown, TrendingUp } from "@mui/icons-material";
+import { Chip, Stack, Typography, Box, Tooltip, useMediaQuery, IconButton } from "@mui/material";
+import { NoteAltOutlined, TrendingDown, TrendingUp, DeleteOutline } from "@mui/icons-material";
 import { formatCurrency, formatDate, isCredit } from "./helpers/helperFunc";
 import type { TransactionResponse } from "../../types/api";
 
 const TransactionRow = ({
   tx,
   categoryMap,
+  onDelete,
+  isDeleting = false,
 }: {
   tx: TransactionResponse;
   categoryMap: Record<string, string>;
+  onDelete?: () => void;
+  isDeleting?: boolean;
 }) => {
   const isCreditTx = isCredit(tx.type);
   const isMobile = useMediaQuery('(max-width:600px)');
@@ -25,6 +29,7 @@ const TransactionRow = ({
         borderRadius: 2,
         transition: "background 0.15s ease",
         "&:hover": { bgcolor: "action.hover" },
+        "&:hover .delete-button": { opacity: 1 },
         flexDirection: { xs: 'column', sm: 'row' },
       }}
     >
@@ -86,6 +91,24 @@ const TransactionRow = ({
           sx={{ height: { xs: 16, sm: 18 }, fontSize: { xs: '0.55rem', sm: '0.6rem' }, fontWeight: 600 }}
         />
       </Stack>
+
+      <IconButton
+        aria-label="Delete transaction"
+        onClick={onDelete}
+        disabled={isDeleting}
+        className="delete-button"
+        sx={{
+          opacity: 0.35,
+          color: "error.main",
+          transition: "opacity 0.2s ease",
+          ml: { xs: 0, sm: 1 },
+          '&:hover': {
+            opacity: 1,
+          },
+        }}
+      >
+        <DeleteOutline fontSize="small" />
+      </IconButton>
     </Box>
   );
 };

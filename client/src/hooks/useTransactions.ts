@@ -90,17 +90,26 @@ export const useUpdateTransaction = () => {
   });
 };
 
-export const useDeleteTransaction = () => {
+export const useDeleteTransaction = (profileId?: string) => {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
 
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: (id: string) => transactionApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions", user?.id] });
+      if (profileId) {
+        queryClient.invalidateQueries({ queryKey: ["summary", profileId] });
+      }
     },
     onError: (error: any) => {
       console.error("Delete transaction error:", error);
     },
   });
+
+  return {
+    deleteTransaction: mutation.mutateAsync,
+    isLoading: mutation.isPending,
+    error: mutation.error,
+  };
 };

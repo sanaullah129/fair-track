@@ -21,6 +21,17 @@ class ProfileRepository {
         logger.info({ query }, "Finding profiles with query");
         // If fetchActive is undefined, no isActive filter applied (returns all non-deleted)
         const profiles = await ProfileModel.find(query).sort({ createdAt: -1 });
+
+        // Return the default "Self" profile first when present
+        profiles.sort((a, b) => {
+            const aIsDefault = a.name === "Self" ? -1 : 0;
+            const bIsDefault = b.name === "Self" ? -1 : 0;
+            if (aIsDefault !== bIsDefault) {
+                return aIsDefault - bIsDefault;
+            }
+            return 0;
+        });
+
         return profiles;
     }
 

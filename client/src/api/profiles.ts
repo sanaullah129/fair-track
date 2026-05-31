@@ -7,8 +7,8 @@ export const profileApi = {
   },
 
   getByUser: async (userId: string, fetchActive?: boolean) => {
-    const url = fetchActive !== undefined 
-      ? `/profile/user/${userId}/${fetchActive}` 
+    const url = fetchActive !== undefined
+      ? `/profile/user/${userId}/${fetchActive}`
       : `/profile/user/${userId}`;
     const response = await apiClient.get<{ message: string; profiles: ProfileModel[] }>(url);
     return response.profiles;

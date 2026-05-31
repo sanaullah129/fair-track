@@ -56,7 +56,7 @@ class UserController {
                 logger.error({ error: (profileErr as any).message }, "Error creating default profile");
             }
 
-            return { ...user, password: undefined } as IUserModel;
+            return { ...user, password: "undefined" } as IUserModel;
         } catch (error: any) {
             logger.error(
                 { error: error.message },
@@ -68,7 +68,8 @@ class UserController {
 
     public async loginUser(
         usernameOrEmail: string,
-        password: string
+        password: string,
+        rememberMe?: boolean
     ): Promise<{ user: IUserModel; token: string }> {
         try {
             logger.info({ usernameOrEmail }, "User login attempt");
@@ -86,11 +87,14 @@ class UserController {
                 throw new Error("Invalid credentials");
             }
 
-            const token = generateToken({
-                userId: (user as any)._id.toString(),
-                username: user.username,
-                email: user.email,
-            });
+            const token = generateToken(
+                {
+                    userId: (user as any)._id.toString(),
+                    username: user.username,
+                    email: user.email,
+                },
+                rememberMe === true ? "30d" : undefined
+            );
 
             logger.info(
                 { userId: (user as any)._id },
@@ -98,7 +102,7 @@ class UserController {
             );
 
             const userWithoutPassword = user;
-            delete userWithoutPassword.password;
+            userWithoutPassword.password = "undefined" as any; // Mask the password before returning
 
             return {
                 user: userWithoutPassword,

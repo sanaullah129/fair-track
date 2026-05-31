@@ -68,7 +68,11 @@ class UserMiddleware {
     ): Promise<void> {
         try {
             logger.info("Login request received");
-            const { usernameOrEmail, password } = req.body;
+            const { usernameOrEmail, password, rememberMe } = req.body as {
+                usernameOrEmail: string;
+                password: string;
+                rememberMe?: boolean;
+            };
 
             if (!validateLoginData(req.body)) {
                 logger.warn({ usernameOrEmail }, "Invalid login data");
@@ -76,7 +80,7 @@ class UserMiddleware {
                 return;
             }
 
-            const result = await userController.loginUser(usernameOrEmail, password);
+            const result = await userController.loginUser(usernameOrEmail, password, rememberMe);
 
             logger.info({ userId: (result.user as any)._id }, "User logged in successfully");
             // Set the JWT token in an HTTP-only cookie

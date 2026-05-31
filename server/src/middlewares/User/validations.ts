@@ -34,6 +34,10 @@ const validateLoginData = (data: any): boolean => {
         return false;
     }
 
+    if (data.rememberMe !== undefined && typeof data.rememberMe !== "boolean") {
+        return false;
+    }
+
     return true;
 };
 

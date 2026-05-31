@@ -7,9 +7,9 @@ export interface JwtPayload {
     email: string;
 }
 
-export const generateToken = (payload: JwtPayload): string => {
+export const generateToken = (payload: JwtPayload, expiresIn?: string): string => {
     const options: SignOptions = {
-        expiresIn: envConfig.jwtExpire as any,
+        expiresIn: expiresIn ?? (envConfig.jwtExpire as any),
     };
     return jwt.sign(payload, envConfig.jwtSecret, options);
 };

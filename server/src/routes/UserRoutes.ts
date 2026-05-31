@@ -99,6 +99,9 @@ router.post('/sign-up', userMiddleware.signUp);
  *                 type: string
  *                 minLength: 6
  *                 example: password123
+ *               rememberMe:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       200:
  *         description: Login successful

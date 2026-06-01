@@ -31,7 +31,7 @@ interface TransactionFormProps {
   onError?: (message: string) => void;
 }
 
-const getInitialFormData = (transaction?: TransactionResponse) => {
+const getInitialFormData = (transaction?: TransactionResponse | null) => {
   if (transaction) {
     const dateValue = transaction.date ? new Date(transaction.date) : new Date();
     const formattedDate = isNaN(dateValue.getTime())

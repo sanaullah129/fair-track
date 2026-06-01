@@ -426,17 +426,17 @@ router.get('/:id', (req: Request, res: Response) => transactionMiddleware.getTra
 
 /**
  * @swagger
- * /transaction/{id}:
+ * /transaction/{transactionId}:
  *   put:
  *     tags:
  *       - Transaction
  *     summary: Update a transaction
- *     description: Update an existing transaction's amount, type, note, and/or date
+ *     description: Update an existing transaction's amount, type, note, date, or category
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: transactionId
  *         required: true
  *         schema:
  *           type: string
@@ -456,6 +456,9 @@ router.get('/:id', (req: Request, res: Response) => transactionMiddleware.getTra
  *                 type: string
  *                 enum: [credit, debit]
  *                 example: debit
+ *               category:
+ *                 type: string
+ *                 example: 507f1f77bcf86cd799439011
  *               note:
  *                 type: string
  *                 maxLength: 500
@@ -502,7 +505,7 @@ router.get('/:id', (req: Request, res: Response) => transactionMiddleware.getTra
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/:id', (req: Request, res: Response) => transactionMiddleware.updateTransaction(req, res));
+router.put('/:transactionId', (req: Request, res: Response) => transactionMiddleware.updateTransaction(req, res));
 
 /**
  * @swagger

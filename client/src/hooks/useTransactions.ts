@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { transactionApi } from "../api/transactions";
 import type { TransactionResponse, TransactionRequest } from "../types/api";
@@ -73,21 +74,31 @@ export const useCreateTransaction = () => {
   });
 };
 
-export const useUpdateTransaction = () => {
+export const useUpdateTransaction = (profileId?: string) => {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
 
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<TransactionRequest> }) =>
       transactionApi.update(id, data),
     onSuccess: (data: TransactionResponse) => {
       queryClient.invalidateQueries({ queryKey: ["transaction", data._id] });
       queryClient.invalidateQueries({ queryKey: ["transactions", user?.id] });
+      const summaryProfileId = profileId || data.profileId;
+      if (summaryProfileId) {
+        queryClient.invalidateQueries({ queryKey: ["summary", summaryProfileId] });
+      }
     },
     onError: (error: any) => {
       console.error("Update transaction error:", error);
     },
   });
+
+  return {
+    updateTransaction: mutation.mutate,
+    isLoading: mutation.isPending,
+    error: mutation.error,
+  };
 };
 
 export const useDeleteTransaction = (profileId?: string) => {

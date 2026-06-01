@@ -1,5 +1,5 @@
 import { Chip, Stack, Typography, Box, Tooltip, useMediaQuery, IconButton } from "@mui/material";
-import { NoteAltOutlined, TrendingDown, TrendingUp, DeleteOutline } from "@mui/icons-material";
+import { NoteAltOutlined, TrendingDown, TrendingUp, DeleteOutline, EditOutlined } from "@mui/icons-material";
 import { formatCurrency, formatDate, isCredit } from "./helpers/helperFunc";
 import type { TransactionResponse } from "../../types/api";
 
@@ -7,11 +7,13 @@ const TransactionRow = ({
   tx,
   categoryMap,
   onDelete,
+  onEdit,
   isDeleting = false,
 }: {
   tx: TransactionResponse;
   categoryMap: Record<string, string>;
   onDelete?: () => void;
+  onEdit: (transaction: TransactionResponse) => void;
   isDeleting?: boolean;
 }) => {
   const isCreditTx = isCredit(tx.type);
@@ -29,7 +31,7 @@ const TransactionRow = ({
         borderRadius: 2,
         transition: "background 0.15s ease",
         "&:hover": { bgcolor: "action.hover" },
-        "&:hover .delete-button": { opacity: 1 },
+        "&:hover .delete-button, &:hover .edit-button": { opacity: 1 },
         flexDirection: { xs: 'column', sm: 'row' },
       }}
     >
@@ -92,6 +94,23 @@ const TransactionRow = ({
         />
       </Stack>
 
+      <IconButton
+        aria-label="Edit transaction"
+        onClick={() => onEdit(tx)}
+        disabled={isDeleting}
+        className="edit-button"
+        sx={{
+          opacity: 0.35,
+          color: "text.primary",
+          transition: "opacity 0.2s ease",
+          ml: { xs: 0, sm: 1 },
+          '&:hover': {
+            opacity: 1,
+          },
+        }}
+      >
+        <EditOutlined fontSize="small" />
+      </IconButton>
       <IconButton
         aria-label="Delete transaction"
         onClick={onDelete}

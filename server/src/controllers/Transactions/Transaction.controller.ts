@@ -152,28 +152,27 @@ class TransactionController {
     }
 
     public async updateTransaction(
-        id: string,
+        transactionId: string,
+        userId: string,
         transactionData: Partial<ITransactionModel>
     ): Promise<ITransactionModel | null> {
         try {
-            logger.info({ transactionId: id }, "Updating transaction");
+            logger.info({ transactionId, userId }, "Updating transaction");
 
-            // Fetch the old transaction to capture current values
-            const oldTransaction = await this._transactionRepository.findTransactionById(id);
-            if (!oldTransaction) {
-                logger.warn({ transactionId: id }, "Transaction not found for update");
+            const transaction = await this._transactionRepository.updateTransaction(
+                transactionId,
+                userId,
+                transactionData
+            );
+
+            if (!transaction) {
+                logger.warn({ transactionId, userId }, "Transaction not found for update");
                 return null;
             }
 
-            const transaction = await this._transactionRepository.updateTransaction(id, transactionData);
-            if (!transaction) {
-                logger.warn({ transactionId: id }, "Transaction not found for update");
-            } else {
-                logger.info({ transactionId: id }, "Transaction updated successfully");
+            logger.info({ transactionId, userId }, "Transaction updated successfully");
 
-                // Update summary asynchronously without await
-                this._summaryRepository.updateSummaryOnTransactionUpdate(oldTransaction, transaction);
-            }
+            this._summaryRepository.recomputeSummaryForProfile(userId, transaction.profileId).catch(console.error);
             return transaction;
         } catch (error: any) {
             logger.error(

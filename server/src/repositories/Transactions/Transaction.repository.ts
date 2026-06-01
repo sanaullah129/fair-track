@@ -75,14 +75,34 @@ class TransactionRepository {
     }
 
     public async updateTransaction(
-        id: string,
+        transactionId: string,
+        userId: string,
         transactionData: Partial<ITransactionModel>
     ): Promise<ITransactionModel | null> {
-        const updatedTransaction = await TransactionModel.findByIdAndUpdate(
-            id,
-            transactionData,
+        const allowedUpdateFields: Partial<ITransactionModel> = {};
+
+        if (typeof transactionData.amount === "number") {
+            allowedUpdateFields.amount = transactionData.amount;
+        }
+        if (transactionData.date) {
+            allowedUpdateFields.date = transactionData.date;
+        }
+        if (transactionData.note !== undefined) {
+            allowedUpdateFields.note = transactionData.note;
+        }
+        if (transactionData.type) {
+            allowedUpdateFields.type = transactionData.type;
+        }
+        if (transactionData.category) {
+            allowedUpdateFields.category = transactionData.category;
+        }
+
+        const updatedTransaction = await TransactionModel.findOneAndUpdate(
+            { _id: transactionId, userId, deletedAt: null },
+            allowedUpdateFields,
             { new: true }
         );
+
         return updatedTransaction;
     }
 

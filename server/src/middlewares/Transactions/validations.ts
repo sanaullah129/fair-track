@@ -63,6 +63,12 @@ const validateUpdateTransactionData = (data: Partial<ITransactionModel>): boolea
         }
     }
 
+    if (data.category) {
+        if (typeof data.category !== "string" || data.category.trim().length === 0) {
+            return false;
+        }
+    }
+
     if (data.date) {
         if (!(data.date instanceof Date)) {
             return false;

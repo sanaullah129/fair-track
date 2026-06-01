@@ -255,12 +255,19 @@ class TransactionMiddleware {
     ): Promise<void> {
         try {
             logger.info("Update transaction request received");
-            const { id } = req.params;
-            const { amount, type, note, date } = req.body as Partial<ITransactionModel>;
+            const { transactionId } = req.params;
+            const userId = req.user?.userId;
+            const { amount, type, note, date, category } = req.body as Partial<ITransactionModel>;
 
-            if (!id || Array.isArray(id)) {
+            if (!transactionId || Array.isArray(transactionId)) {
                 logger.warn("Transaction ID not provided");
                 res.status(400).json({ message: "Transaction ID is required" });
+                return;
+            }
+
+            if (!userId) {
+                logger.warn({ transactionId }, "Unauthorized update transaction attempt");
+                res.status(401).json({ message: "Unauthorized" });
                 return;
             }
 
@@ -268,32 +275,30 @@ class TransactionMiddleware {
                 amount,
                 type,
                 note,
+                category,
                 date: date ? new Date(date) : undefined,
+                updatedBy: userId,
             } as Partial<ITransactionModel>;
 
             if (!validateUpdateTransactionData(transactionData)) {
-                logger.warn({ transactionId: id }, "Invalid update data");
+                logger.warn({ transactionId }, "Invalid update data");
                 res.status(400).json({ message: "Invalid transaction data" });
                 return;
             }
 
-            const existingTransaction = await this.transactionController.getTransaction(id);
-            if (!existingTransaction) {
-                logger.warn({ transactionId: id }, "Transaction not found");
+            const updatedTransaction = await this.transactionController.updateTransaction(
+                transactionId as string,
+                userId,
+                transactionData
+            );
+
+            if (!updatedTransaction) {
+                logger.warn({ transactionId }, "Transaction not found");
                 res.status(404).json({ message: "Transaction not found" });
                 return;
             }
 
-            const updatedData: Partial<ITransactionModel> = {};
-            if (amount) updatedData.amount = amount;
-            if (type) updatedData.type = type;
-            if (note) updatedData.note = note.trim();
-            if (date) updatedData.date = new Date(date);
-            updatedData.updatedBy = req.user?.userId!;
-
-            const updatedTransaction = await this.transactionController.updateTransaction(id as string, updatedData);
-
-            logger.info({ transactionId: id }, "Transaction updated successfully");
+            logger.info({ transactionId }, "Transaction updated successfully");
             res.status(200).json({
                 message: "Transaction updated successfully",
                 transaction: updatedTransaction,

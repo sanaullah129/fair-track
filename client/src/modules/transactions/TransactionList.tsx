@@ -23,6 +23,7 @@ import { formatCurrency } from "./helpers/helperFunc";
 import type { TransactionResponse } from "../../types/api";
 import SummaryBar from "./SummaryBar";
 import TransactionRow from "./TransactionRow";
+import TransactionForm from "./TransactionForm";
 
 interface TransactionListProps {
   profileId?: string;
@@ -40,6 +41,7 @@ const TransactionList = ({ profileId }: TransactionListProps) => {
   const { data: categories = [] } = useCategories();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<TransactionResponse | null>(null);
+  const [editingTransaction, setEditingTransaction] = useState<TransactionResponse | null>(null);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -120,6 +122,27 @@ const TransactionList = ({ profileId }: TransactionListProps) => {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  const handleEditClick = (transaction: TransactionResponse) => {
+    setEditingTransaction(transaction);
+  };
+
+  const handleEditSuccess = () => {
+    setEditingTransaction(null);
+    setSnackbar({
+      open: true,
+      message: "Transaction updated successfully!",
+      severity: "success",
+    });
+  };
+
+  const handleEditError = (message: string) => {
+    setSnackbar({
+      open: true,
+      message,
+      severity: "error",
+    });
+  };
+
   return (
     <Box mt={{ xs: 1, sm: 2 }}>
       <SummaryBar transactions={transactions} />
@@ -130,6 +153,7 @@ const TransactionList = ({ profileId }: TransactionListProps) => {
             tx={tx}
             categoryMap={categoryMap}
             onDelete={() => handleDeleteClick(tx)}
+            onEdit={handleEditClick}
             isDeleting={isDeleting && transactionToDelete?._id === tx._id}
           />
         ))}
@@ -175,6 +199,15 @@ const TransactionList = ({ profileId }: TransactionListProps) => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <TransactionForm
+        open={Boolean(editingTransaction)}
+        onClose={() => setEditingTransaction(null)}
+        profileId={editingTransaction?.profileId ?? profileId ?? ""}
+        transaction={editingTransaction}
+        onSuccess={handleEditSuccess}
+        onError={handleEditError}
+      />
 
       <Snackbar
         open={snackbar.open}

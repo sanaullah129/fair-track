@@ -31,12 +31,19 @@ interface TransactionFormProps {
   onError?: (message: string) => void;
 }
 
+const formatDateToLocalInput = (date: Date) => {
+  const pad = (value: number) => value.toString().padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(
+    date.getHours()
+  )}:${pad(date.getMinutes())}`;
+};
+
 const getInitialFormData = (transaction?: TransactionResponse | null) => {
   if (transaction) {
     const dateValue = transaction.date ? new Date(transaction.date) : new Date();
     const formattedDate = isNaN(dateValue.getTime())
-      ? new Date().toISOString().slice(0, 16)
-      : dateValue.toISOString().slice(0, 16);
+      ? formatDateToLocalInput(new Date())
+      : formatDateToLocalInput(dateValue);
 
     return {
       amount: transaction.amount,
@@ -49,7 +56,7 @@ const getInitialFormData = (transaction?: TransactionResponse | null) => {
 
   return {
     type: TransactionType.DEBIT,
-    date: new Date().toISOString().slice(0, 16), // Format: YYYY-MM-DDTHH:mm
+    date: formatDateToLocalInput(new Date()), // Format: YYYY-MM-DDTHH:mm
     category: "",
   } as Partial<TransactionRequest>;
 };
@@ -121,12 +128,21 @@ const TransactionForm = ({
       return;
     }
 
-    // Convert date to ISO string if it's in datetime-local format (YYYY-MM-DDTHH:mm)
+    const parseLocalDatetime = (value: string) => {
+      const [datePart, timePart] = value.split("T");
+      if (!datePart || !timePart) return null;
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hours, minutes] = timePart.split(":").map(Number);
+      return new Date(year, month - 1, day, hours, minutes);
+    };
+
     let dateValue = formData.date;
-    if (dateValue && dateValue.includes("T") && !dateValue.includes("Z")) {
-      // Convert YYYY-MM-DDTHH:mm to ISO datetime
-      dateValue = new Date(`${dateValue}:00Z`).toISOString();
-    } else if (!dateValue) {
+    if (dateValue) {
+      const localDate = parseLocalDatetime(dateValue);
+      dateValue = localDate && !isNaN(localDate.getTime())
+        ? localDate.toISOString()
+        : new Date().toISOString();
+    } else {
       dateValue = new Date().toISOString();
     }
 

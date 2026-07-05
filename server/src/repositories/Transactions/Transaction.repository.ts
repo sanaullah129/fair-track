@@ -1,4 +1,4 @@
-import { ITransactionModel } from "../../models/IModels";
+import { ITransactionModel, TransactionType } from "../../models/IModels";
 import TransactionModel from "../../models/Transaction.model";
 
 class TransactionRepository {
@@ -40,7 +40,7 @@ class TransactionRepository {
 
     public async findTransactionsByUserAndType(
         userId: string,
-        type: string
+        type: TransactionType
     ): Promise<ITransactionModel[]> {
         const transactions = await TransactionModel.find({
             userId,

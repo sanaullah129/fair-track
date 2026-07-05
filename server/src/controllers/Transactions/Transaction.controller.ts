@@ -2,7 +2,7 @@ import TransactionRepository from "../../repositories/Transactions/Transaction.r
 import ProfileRepository from "../../repositories/Profiles/Profile.repository";
 import SummaryRepository from "../../repositories/Summary/Summary.repository";
 import logger from "../../configs/loggerConfig";
-import type { ITransactionModel } from "../../models/IModels";
+import type { ITransactionModel, TransactionType } from "../../models/IModels";
 
 class TransactionController {
     private _transactionRepository: TransactionRepository;
@@ -76,7 +76,7 @@ class TransactionController {
             logger.info({ userId, type }, "Fetching transactions by user and type");
             const transactions = await this._transactionRepository.findTransactionsByUserAndType(
                 userId,
-                type
+                type as TransactionType
             );
             return transactions;
         } catch (error: any) {

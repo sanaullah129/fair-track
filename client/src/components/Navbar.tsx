@@ -86,10 +86,10 @@ function ResponsiveAppBar() {
             }}
           >
             <img
-              src="/fair-track.png"
+              src="/main_logo.png"
               alt="FairTrack"
-              width="100"
-              height="40"
+              width="175"
+              height="65"
             />
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>

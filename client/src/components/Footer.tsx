@@ -24,7 +24,7 @@ const Footer = () => {
             fontSize: { xs: '0.7rem', sm: '0.75rem' }
           }}
         >
-          FairTrack — Sanaullah Ansari
+          FairTrack - Sanaullah Ansari
         </Typography>
     </Paper>
   )
